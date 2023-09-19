@@ -41,9 +41,17 @@ class Lunches(models.Model):
     created_at = models.DateTimeField(auto_now=True)
     note = models.TextField(null=True)
 
+    def __str__(self) -> str:
+        return self.id
+
 class Withdrawals(models.Model):
     id = models.BigAutoField(primary_key=True)
     user_id = models.ForeignKey(Users, on_delete=models.CASCADE)
     status= models.CharField(max_length=30)
     amount = models.DecimalField()
     created_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self) -> str:
+        return self.id
+
+
