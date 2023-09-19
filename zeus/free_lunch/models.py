@@ -48,7 +48,7 @@ class Withdrawals(models.Model):
     id = models.BigAutoField(primary_key=True)
     user_id = models.ForeignKey(Users, on_delete=models.CASCADE)
     status= models.CharField(max_length=30)
-    amount = models.DecimalField()
+    amount = models.DecimalField(default=0.00)
     created_at = models.DateTimeField(auto_now=True)
 
     def __str__(self) -> str:
@@ -59,3 +59,9 @@ class OrganizationInvites(models.Model):
     email = models.EmailField(unique=True)
     token = models.CharField(max_length=100)
     TTL = models.DateTimeField()
+
+
+class OrganizationLunchWallet(models.Model):
+    id= models.BigAutoField(primary_key=True, unique=True)
+    org_id = models.ForeignKey(Organization, on_delete=models.CASCADE)
+    balance = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
