@@ -5,7 +5,7 @@ from django.db import models
 class Organization(models.Model):
     id = models.BigAutoField(primary_key=True, unique=True)
     name = models.CharField(max_length=50)
-    lunch_price = models.DecimalField(max_digit=10, decimal_places=2)
+    lunch_price = models.DecimalField(max_digits=10, decimal_places=2)
     currency = models.CharField(max_length=3)
 
     def __str__(self):
@@ -53,5 +53,3 @@ class Withdrawals(models.Model):
 
     def __str__(self) -> str:
         return self.id
-
-
