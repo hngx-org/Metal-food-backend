@@ -53,3 +53,9 @@ class Withdrawals(models.Model):
 
     def __str__(self) -> str:
         return self.id
+
+class OrganizationInvites(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    email = models.EmailField()
+    token = models.CharField(max_length=100)
+    TTL = models.DateTimeField()
