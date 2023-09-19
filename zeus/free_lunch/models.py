@@ -56,6 +56,6 @@ class Withdrawals(models.Model):
 
 class OrganizationInvites(models.Model):
     id = models.BigAutoField(primary_key=True)
-    email = models.EmailField()
+    email = models.EmailField(unique=True)
     token = models.CharField(max_length=100)
     TTL = models.DateTimeField()
