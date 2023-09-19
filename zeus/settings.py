@@ -20,7 +20,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-1ezrrk*^*db8br%jue=ife5u=vik4z2h_+0d+i6dudawrgckp='
+SECRET_KEY = 'django-insecure-y&g6_ol+(_lc=(mi=)k&pz2!l@$cglm3_d(k$t30q)sin((&gi'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -37,6 +37,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    
+    'drf_spectacular',
+    
+    'rest_framework',
+    'users',
+    'transaction',
 ]
 
 MIDDLEWARE = [
@@ -111,7 +117,27 @@ USE_I18N = True
 
 USE_TZ = True
 
+REST_FRAMEWORK = {
+    # Use Django's standard `django.contrib.auth` permissions,
+    # or allow read-only access for unauthenticated users.
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+    ], 
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+    
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    )
+    
+}
 
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Zeus API',
+    'DESCRIPTION': 'An app for gifting free lunch',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+    # OTHER SETTINGS
+}
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
