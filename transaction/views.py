@@ -56,3 +56,25 @@ class WithdrawalRequestCreateView(generics.CreateAPIView):
             }
 
             return Response(response_data, status=status.HTTP_201_CREATED)
+        
+
+
+
+"""
+Get the count of withdrawal made by user
+"""
+
+class WithdrawalCountView(generics.RetrieveAPIView):
+    permission_classes = [IsAuthenticated]
+
+    def retrieve(self, request, *args, **kwargs):
+        #  count of withdrawal requests for the user
+        withdrawal_count = Withdrawals.objects.filter(user=request.user).count()
+        response_data = {
+            "user_id": request.user.id,
+            "withdrawal_count": withdrawal_count,
+        }
+
+        return Response(response_data, status=status.HTTP_200_OK)
+
+# Create your views here.        
