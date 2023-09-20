@@ -18,7 +18,7 @@ class UserSerializer(serializers.ModelSerializer):
 class RegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['full_name', 'email', 'password', 'mobile']
+        fields = ['username', 'email', 'password',]
         extra_kwargs = {'password': {'write_only': True}}
         required_feilds = ['mobile']
 
@@ -28,7 +28,6 @@ class RegisterSerializer(serializers.ModelSerializer):
         user = User(
           email=validated_data['email'],
           full_name=validated_data['full_name'],
-          mobile=validated_data['mobile']
           )
         user.set_password(validated_data['password'])
         user.is_active = False  
