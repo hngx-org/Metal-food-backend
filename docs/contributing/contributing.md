@@ -36,6 +36,7 @@ Thank you for your interest in contributing to the Django backend project for th
 - Incorporate the changes requested by the reviewer and seek their approval before the branch is merged.
 
 ## Testing
+
 - It is the responsibility of the contributor to ensure that their changes work properly and do not introduce conflicts with the system
 - Ensure that all tests pass locally before submitting a PR.
 - Automated testing pipelines will run tests on the CI/CD platform, but it is your responsibility to ensure that your changes do not break existing functionality.
