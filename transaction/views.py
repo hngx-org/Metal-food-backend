@@ -45,7 +45,7 @@ class SendLunchView(generics.CreateAPIView):
     def create(self, request, *args, **kwargs):
         serializer=self.get_serializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
-            senderId=request.user
+            senderId=request.user.id
             note=serializer.validated_data.get('note')
             for receiver_Id in serializer.validated_data.get('receiverId'):
                 receiverId=receiver_Id['id']
