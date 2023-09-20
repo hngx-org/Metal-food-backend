@@ -54,3 +54,15 @@ def transaction():
         currency="NGN",
         status="PENDING",
     )
+
+
+@pytest.fixture
+def bank_account(user):
+    return BankAccount.objects.create(
+        number="8073487154",
+        name="Brian David Obot",
+        bank_name="Opay",
+        bank_code="87618798198",
+        user=user,
+    )
+
