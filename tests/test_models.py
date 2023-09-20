@@ -66,3 +66,12 @@ def bank_account(user):
         user=user,
     )
 
+
+@pytest.fixture
+def wallet(org):
+    return Wallet.objects.create(
+        balance=1000,
+        organization=org,
+    )
+
+
