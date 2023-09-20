@@ -23,7 +23,15 @@ Copyright 2023 Brian Obot
 
 import pytest
 
-from transaction.models import LaunchWallet, LaunchTransaction, Transaction, BankAccount, Wallet, Organization, Launch
+from transaction.models import (
+    LaunchWallet,
+    LaunchTransaction,
+    Transaction,
+    BankAccount,
+    Wallet,
+    Organization,
+    Launch,
+)
 from users.models import User, Staff, Organization
 
 
@@ -41,7 +49,7 @@ def organization():
     )
 
 
-@pytest.fixture 
+@pytest.fixture
 def launch_wallet(staff):
     return LaunchWallet.objects.create(
         staff=staff,
@@ -87,5 +95,3 @@ def wallet(org):
         balance=1000,
         organization=org,
     )
-
-
