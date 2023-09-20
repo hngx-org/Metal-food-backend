@@ -17,7 +17,24 @@ from .utils import response, abort, BaseResponse
 
 
 
-User = get_user_model()
+# User = get_user_model()
+
+class OrganizationCreateAPIView(generics.CreateAPIView):
+    serializer_class = GetOrganizationSerializer
+    permission_classes = [AllowAny]
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        org = serializer.save()
+        print(org.__dict__)
+        res = {
+            "message": "Organization created successfully!",
+            "code":201,
+            "data":serializer.data
+        }
+        return Response(data=res, status=status.HTTP_201_CREATED)
+
 
 
 class RegisterView(generics.CreateAPIView):

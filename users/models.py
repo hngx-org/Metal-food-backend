@@ -2,22 +2,13 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, Permis
 from django.db import models
 
 
-class Organization(models.Model):
-    name = models.CharField(max_length=50)
-    lunch_price = models.DecimalField(max_digits=10, decimal_places=2)
-    currency = models.CharField(max_length=3)
-
-    def __str__(self):
-        return self.name
-
-
 class CustomUserManager(BaseUserManager):
     def create_user(self, email, password, **kwargs):
         if not email:
             raise ValueError('The Email field must be set')
         email = self.normalize_email(email)
         user = self.model(email=email, **kwargs)
-        user.set_password(password)
+        # user.set_password(password)
         user.save(using=self._db)
         return user
 
@@ -31,6 +22,23 @@ class CustomUserManager(BaseUserManager):
             raise ValueError('Superuser must have is_superuser=True.')
 
         return self.create_user(email, password, **kwargs)
+
+class Organization(AbstractBaseUser, PermissionsMixin):
+    name = models.CharField(max_length=50, unique=True)
+    email = models.EmailField(unique=True, null=False, blank=False)
+    lunch_price = models.DecimalField(max_digits=10, decimal_places=2, default=1000.00)
+    currency = models.CharField(max_length=3, default='NGN')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    is_deleted = models.BooleanField(default=False)
+
+    USERNAME_FIELD = "email"
+    objects = CustomUserManager()
+
+    def __str__(self):
+        return self.name
+
+
 
 class Users(AbstractBaseUser, PermissionsMixin):
     org = models.ForeignKey(Organization, on_delete=models.CASCADE)
