@@ -24,7 +24,21 @@ Copyright 2023 Brian Obot
 import pytest
 
 from transaction.models import LaunchWallet, LaunchTransaction, Transaction, BankAccount, Wallet, Organization, Launch
-from users.models import Staff
+from users.models import User, Staff, Organization
+
+
+@pytest.fixture
+def user():
+    return User.objects.create(email="brianobot9@gmail.com", password="testpassword")
+
+
+@pytest.fixture
+def organization():
+    return Organization.objects.create(
+        name="Test Organization",
+        email="testorg@org.com",
+        role="Humanitarian",
+    )
 
 
 @pytest.fixture 
