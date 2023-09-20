@@ -10,4 +10,4 @@ class UsersSerializer(serializers.ModelSerializer):
 class OrganizationSerializer(serializers.ModelSerializer):
     class Meta:
         model= Organization
-        fields = ['id','name','lunch_price', 'currency']
+        fields = ['id','name','lunch_price']
