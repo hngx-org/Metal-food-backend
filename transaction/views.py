@@ -52,7 +52,7 @@ class WithdrawalRequestGetView(generics.RetrieveAPIView):
         if user_id is not None and user_id != "":
             try:
                 user = Users.objects.get(id=user_id)
-            except Users.DoesNotWExist():
+            except Users.DoesNotExist():
                 response = {
                     "message": "User not found",
                     "statusCode": status.HTTP_404_NOT_FOUND,
