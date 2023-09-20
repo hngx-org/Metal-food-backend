@@ -9,7 +9,7 @@ from django.db.models import Q
 
 class UsersListView(generics.ListAPIView):
     serializer_class = UsersSerializer
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
         org_id = self.kwargs.get('org_id', None)
