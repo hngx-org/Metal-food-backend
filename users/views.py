@@ -39,7 +39,7 @@ class OrganizationCreateAPIView(generics.CreateAPIView):
 
 class CreateInviteView(generics.CreateAPIView):
     serializer_class = InviteSerializer
-    queryset = OrganizationInvites
+    # queryset = OrganizationInvites
     permission_classes = [AllowAny]
 
 

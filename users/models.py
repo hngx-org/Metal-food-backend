@@ -97,16 +97,16 @@ class OrganizationInvites(models.Model):
     def __str__(self) -> str:
         return str(self.id)
     
-    def is_expired(self):
-        """Checks if the invite token has expired"""
-        return self.TTL < timezone.now()
+    # def is_expired(self):
+    #     """Checks if the invite token has expired"""
+    #     return self.TTL < timezone.now()
     
-    def get_remaining_time(self):
-        """Get the remaining time until expiration."""
-        if not self.is_expired():
-            remaining_time = self.TTL - timezone.now()
-            return remaining_time.total_seconds()
-        return None
+    # def get_remaining_time(self):
+    #     """Get the remaining time until expiration."""
+    #     if not self.is_expired():
+    #         remaining_time = self.TTL - timezone.now()
+    #         return remaining_time.total_seconds()
+    #     return None
 
 class OrganizationLunchWallet(models.Model):
     org_id = models.ForeignKey(Organization, on_delete=models.CASCADE)
