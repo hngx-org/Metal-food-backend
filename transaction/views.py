@@ -21,21 +21,6 @@ class ListLunchHistory(generics.ListAPIView):
         query_set = Lunch.objects.filter(sender_id=user) | Lunch.objects.filter(receiver_id=user)
         return query_set
 
-
-class RedeemUserLunch(generics.UpdateAPIView):
-    serializer_class = LunchSerializers
-    permission_classes = [IsAuthenticated,]
-    authentication_classes = [TokenAuthentication, BasicAuthentication, SessionAuthentication]
-    queryset = Lunch.objects.all()
-    lookup_field= 'pk'
-
-    def get_queryset(self):
-        return super().get_queryset()
-
-    def perform_update(self, serializer):
-        lunch_id = self.kwargs.get('pk')
-        print('the linch is', lunch_id)
-        return super().perform_update(serializer)
     
 class RedeemLunch(generics.GenericAPIView):
     serializer_class = LunchSerializers
