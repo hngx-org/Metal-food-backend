@@ -44,13 +44,12 @@ class SendLunchView(generics.CreateAPIView):
     permission_classes = [IsAuthenticated]
     def create(self, request, *args, **kwargs):
         serializer=self.get_serializer(data=request.data)
-        if serializer.is_valid(raise_exception=True):
+        if serializer.is_valid():
             senderId=request.user.id
             note=serializer.validated_data.get('note')
-            for receiver_Id in serializer.validated_data.get('receiverId'):
-                receiverId=receiver_Id['id']
-                quantity=receiver_Id['quantity']
-                Lunches.objects.create(sender_id=senderId, reciever_id=int(receiverId), quantity=quantity, note=note)
+            quantity=serializer.validated_data.get('quantity')
+            for receiver_Id in serializer.validated_data.get('receivers'):
+                Lunches.objects.create(sender_id=senderId, reciever_id=receiver_Id, quantity=quantity, note=note)
             return Response({ "message": "Lunch request created successfully","data": {}}, status=status.HTTP_201_CREATED)
 
         else:
