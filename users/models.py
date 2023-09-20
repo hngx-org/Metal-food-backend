@@ -18,21 +18,21 @@ class Users(models.Model):
     org_id = models.ForeignKey(Organization, on_delete=models.SET_NULL, null=True)
     first_name = models.CharField(max_length=255, null=False)
     last_name = models.CharField(max_length=255, null=False)
-    profile_picture = models.ImageField(upload_to='profile_image/')
-    email = models.EmailField(unique=True)
-    phone_number = models.CharField(max_length=15)
-    password_hash = models.CharField(max_length=255)
-    refresh_token = models.CharField(max_length=255)
-    bank_number = models.CharField(max_length=20)
-    bank_code = models.CharField(max_length=30) 
-    bank_name = models.CharField(max_length=30)
-    bank_region = models.CharField(max_length=255)
+    profile_picture = models.ImageField(upload_to='profile_image/', null=True)
+    email = models.EmailField(unique=True,null=False)
+    phone_number = models.CharField(max_length=1, null=False)
+    password_hash = models.CharField(max_length=255, null=False)
+    refresh_token = models.CharField(max_length=255,null=True)
+    bank_number = models.CharField(max_length=20, null=True)
+    bank_code = models.CharField(max_length=30, null=True) 
+    bank_name = models.CharField(max_length=30, null=True)
+    bank_region = models.CharField(max_length=255, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    isAdmin = models.BooleanField(default=False)
+    isAdmin = models.BooleanField(default=False, null=True)
     lunch_credit_balance = models.IntegerField()
     currency = models.CharField(max_length=255)
     currency_code = models.CharField(max_length=10)
-    updated_at = models.DateTimeField()
+    updated_at = models.DateTimeField(auto_now=True)
 
     
     def __str__(self):
@@ -40,7 +40,7 @@ class Users(models.Model):
 
 
 class OrganizationInvites(models.Model):
-    id = models.ForeignKey(Organization, on_delete=models.CASCADE, primary_key=True)
+    id = models.OneToOneField(Organization, on_delete=models.CASCADE, primary_key=True)
     email = models.EmailField(unique=True)
     token = models.CharField(max_length=100)
     TTL = models.DateTimeField()
