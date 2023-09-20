@@ -4,6 +4,7 @@ from rest_framework.decorators import api_view,permission_classes
 from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
+from rest_framework.renderers import JSONRenderer
 from rest_framework import status
 from .serializers import UserSerializer
 from django.contrib.auth.hashers import make_password
@@ -35,10 +36,12 @@ from .models import Users
 def Login(request):
     user = get_object_or_404(Users, username = request.data['username'])
     if not user.check_password(request.data['password']):
-        return Response({"detail": "Object not Found"}, status=status.HTTP_400_BAD_REQUEST)
+        response = Response({"detail": "Object not Found"}, status=status.HTTP_400_BAD_REQUEST)
+        return JSONRenderer().render(response.data)
     
     token, created = Token.objects.get_or_create(user = user)
     serializer = UserSerializer(user, many= False)
-    return Response({"token": token.key, "User": serializer.data })
+    response = Response({"token": token.key, "User": serializer.data })
+    return JSONRenderer().render(response.data)
     
 
