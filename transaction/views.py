@@ -46,7 +46,7 @@ class SendLunchView(generics.CreateAPIView):
         serializer=self.get_serializer(data=request.data)
         if serializer.is_valid():
             senderId=request.user.id
-            note=serializer.validated_data.get('note')
+            note = serializer.validated_data.get('note')
             quantity=serializer.validated_data.get('quantity')
             for receiver_Id in serializer.validated_data.get('receivers'):
                 Lunches.objects.create(sender_id=senderId, reciever_id=receiver_Id, quantity=quantity, note=note)
