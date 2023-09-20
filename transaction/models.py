@@ -3,7 +3,7 @@ from users.models import Users
 
 # Create your models here.
 
-class Lunches(models.Model):
+class Lunch(models.Model):
     id = models.BigAutoField(primary_key=True)
     sender_id = models.ForeignKey(Users, on_delete=models.CASCADE, null=False, related_name='lunch_sender')
     reciever_id = models.ForeignKey(Users, on_delete=models.CASCADE, null=False, related_name='lunch_reciever')
