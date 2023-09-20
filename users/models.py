@@ -33,12 +33,14 @@ class CustomUserManager(BaseUserManager):
         return self.create_user(email, password, **kwargs)
 
 class Users(AbstractBaseUser, PermissionsMixin):
-    org_id = models.ForeignKey(Organization, on_delete=models.CASCADE)
+    org = models.ForeignKey(Organization, on_delete=models.CASCADE)
     first_name = models.CharField(max_length=255)
     last_name = models.CharField(max_length=255)
-    profile_picture = models.ImageField(upload_to='profile_image/', null=True)
-    email = models.EmailField(unique=True)
+    email = models.EmailField(unique=True, null=False, blank=False)
+    username = models.CharField(unique=True, max_length=100, null=False, blank=False)
+    password = models.CharField(max_length=255, null=False, blank=False)
     phone_number = models.CharField(max_length=15)
+    profile_picture = models.ImageField(upload_to='profile_image/', null=True)
     refresh_token = models.CharField(max_length=255, null=True)
     bank_number = models.CharField(max_length=20, null=True)
     bank_code = models.CharField(max_length=30, null=True)
