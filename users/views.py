@@ -30,19 +30,16 @@ class RegisterView(generics.CreateAPIView):
     serializer_class = RegisterSerializer
     def create(self, request, *args, **kwargs):
         exception = None
-        try:
-            serializer = self.get_serializer(data=request.data)
-            serializer.is_valid(raise_exception=True)
-            user = serializer.save()
+        # try:
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.save()
 
-            response_data = {
-                'full_name': user.full_name,
-                'email': user.email,
-            }
-            base_response = BaseResponse(data=response_data, exception=exception, message="User Created Successful")
-            return Response(base_response.to_dict())
-        except Exception as e:
-            return abort(400, "User registration failed" + str(e))
-
-            
-        return Response(response_data, status=status.HTTP_201_CREATED)
+        response_data = {
+            "message": "Account created successfully"
+        }
+        base_response = BaseResponse(data=response_data, exception=exception, message="User Created Successful")
+        return Response(base_response.to_dict())
+        # except Exception as e:
+        #     print(e)
+        #     return abort(400, "User registration failed" + str(e))

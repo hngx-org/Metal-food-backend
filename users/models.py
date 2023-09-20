@@ -1,4 +1,4 @@
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin, AbstractUser
 from django.db import models
 
 
@@ -47,9 +47,9 @@ class Users(AbstractBaseUser, PermissionsMixin):
     bank_name = models.CharField(max_length=30, null=True)
     bank_region = models.CharField(max_length=255, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    lunch_credit_balance = models.DecimalField(max_digits=10, decimal_places=2)
-    currency = models.CharField(max_length=255)
-    currency_code = models.CharField(max_length=10)
+    lunch_credit_balance = models.DecimalField(max_digits=10, decimal_places=2, null=True)
+    currency = models.CharField(max_length=255, null=True)
+    currency_code = models.CharField(max_length=10, null=True)
     updated_at = models.DateTimeField(auto_now=True)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
