@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-from django.contrib.auth import get_user_model
+from django.contrib.auth import get_user_model, hashers
 from  .models import Users
  
 
@@ -15,27 +15,18 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 
-class RegisterSerializer(serializers.ModelSerializer):
+class StaffRegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['username', 'email', 'password',]
-        extra_kwargs = {'password': {'write_only': True}}
-        required_feilds = ['mobile']
+        fields = ['first_name', 'last_name', 'email', 'password',]
+        # extra_kwargs = {'password': {'write_only': True}}
+        # required_feilds = ['mobile']
 
-    mobile = serializers.CharField(required=True)
+    # mobile = serializers.CharField(required=True)
     
     def create(self, validated_data):
-        user = User(
-          email=validated_data['email'],
-          full_name=validated_data['full_name'],
-          )
-        user.set_password(validated_data['password'])
-        user.is_active = False  
-        
-    
-        user.save()
-        return user
-
+        validated_data['password'] = hashers.make_password(validated_data.get('password'))
+        return super(StaffRegisterSerializer, self).create(validated_data)
 
 
 class LoginSerializer(TokenObtainPairSerializer):
