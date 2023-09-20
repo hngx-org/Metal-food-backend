@@ -1,5 +1,6 @@
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin, AbstractUser
 from django.db import models
+from django.utils import timezone
 
 
 class CustomUserManager(BaseUserManager):
@@ -90,16 +91,27 @@ class Users(AbstractBaseUser, PermissionsMixin):
 class OrganizationInvites(models.Model):
     org_id = models.ForeignKey(Organization, on_delete=models.CASCADE, related_name="company")
     email = models.EmailField(unique=True)
-    token = models.CharField(max_length=100)
-    TTL = models.DateTimeField()
+    token = models.CharField(max_length=100, null=True, blank=True)
+    TTL = models.DateTimeField(default=timezone.now() + timezone.timedelta(hours=24))
 
     def __str__(self) -> str:
-        return self.id
+        return str(self.id)
+    
+    def is_expired(self):
+        """Checks if the invite token has expired"""
+        return self.TTL < timezone.now()
+    
+    def get_remaining_time(self):
+        """Get the remaining time until expiration."""
+        if not self.is_expired():
+            remaining_time = self.TTL - timezone.now()
+            return remaining_time.total_seconds()
+        return None
 
 class OrganizationLunchWallet(models.Model):
     org_id = models.ForeignKey(Organization, on_delete=models.CASCADE)
     balance = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
 
     def __str__(self) -> str:
-        return self.id
+        return str(self.id)
 

@@ -1,10 +1,7 @@
-<<<<<<< HEAD
 env
-=======
-**/__pycache__/**
+__pycache__/
 db.sqlite3
 venv/
 /migrations
 .env/
 migrations/
->>>>>>> d700f48aa1e16aa82416b53c068a69c9065537d2

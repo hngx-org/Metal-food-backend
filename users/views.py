@@ -37,10 +37,11 @@ class OrganizationCreateAPIView(generics.CreateAPIView):
         }
         return Response(data=res, status=status.HTTP_201_CREATED)
 
-
 class CreateInviteView(generics.CreateAPIView):
     serializer_class = InviteSerializer
     queryset = OrganizationInvites
+    permission_classes = [AllowAny]
+
 
     def create(self, request):
         token = generate_token()
@@ -52,11 +53,17 @@ class CreateInviteView(generics.CreateAPIView):
                         subject=f"Your invite token is {invite.token}.",
                         recipients=[email],
                         template_name="user_invite.html",
+                        context={'organization':invite, 'token':token}
                     )
+        data = {
+            'reciepient_email': invite.email,
+            'token': invite.token,
+            'TTL': invite.TTL
+        }
         res = {
             "message": "Invite sent!",
             "code":201,
-            "data":serializer.data
+            "data":data
         }
         return Response(data=res, status=status.HTTP_201_CREATED)
     

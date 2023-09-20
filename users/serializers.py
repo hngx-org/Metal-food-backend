@@ -44,15 +44,16 @@ class InviteSerializer(serializers.ModelSerializer):
     # organization = GetOrganizationSerializer(read_only=True)
     class Meta:
         model = OrganizationInvites
-        fields = ['organization', 'email', 'token']
+        fields = ['org_id', 'email']
 
     def create(self, validated_data):
-            """Create Organization"""
-            token = self.context.get('token')
-            validated_data['token'] = token
-            invite = OrganizationInvites.objects.create(validated_data)
-            invite.save()
-            return invite
+        """Create Invite"""
+        token = self.context.get('token')
+        validated_data['token'] = token
+        validated_data['org_id']= validated_data.get('org_id')
+        invite = OrganizationInvites.objects.create(**validated_data)
+        invite.save()
+        return invite
 
 
 
