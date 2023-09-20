@@ -2,6 +2,7 @@ from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from django.contrib.auth import get_user_model, hashers
 from  .models import Users
+import re
  
 
 
@@ -14,6 +15,11 @@ class UserSerializer(serializers.ModelSerializer):
         extra_kwargs = {'password': {'write_only': True}}
 
 
+def validate_name(name):
+    pattern = r'^[A-Za-z\'-]+$'
+    return bool(re.match(pattern, name))
+
+
 class StaffRegisterSerializer(serializers.ModelSerializer):
     class Meta:
         password = serializers.CharField(write_only=True)
@@ -24,10 +30,23 @@ class StaffRegisterSerializer(serializers.ModelSerializer):
         # required_feilds = ['mobile']
 
     # mobile = serializers.CharField(required=True)
-    
+   
+   def validate_first_name(self, obj):
+       if validate_name(obj):
+           return obj
+       else:
+           raise serializers.ValidationError("Invalid first name")
+
+    def validate_last_name(self, obj):
+        if validate_name(obj):
+            return obj
+        else:
+            raise serializers.ValidationError("Invalid lastname")
+    # handle password valiation
     def create(self, validated_data):
         validated_data['password'] = hashers.make_password(validated_data.get('password'))
         return super(StaffRegisterSerializer, self).create(validated_data)
+    
 
 
 class LoginSerializer(TokenObtainPairSerializer):
