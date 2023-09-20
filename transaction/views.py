@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 
 from .serializers import WithdrawalRequestSerializer, LunchSerializers
-from .models import Lunch, Withdrawals
+from .models import Lunch, Withdrawals, Users
 
 
 
@@ -20,7 +20,41 @@ class ListLunchHistory(generics.ListAPIView):
         return query_set
 
 
+class RedeemUserLunch(generics.UpdateAPIView):
+    serializer_class = LunchSerializers
+    permission_classes = [IsAuthenticated,]
+    authentication_classes = [TokenAuthentication, BasicAuthentication, SessionAuthentication]
+    queryset = Lunch.objects.all()
+    lookup_field= 'pk'
 
+    def get_queryset(self):
+        
+
+
+        return super().get_queryset()
+
+    def perform_update(self, serializer):
+        lunch_id = self.kwargs.get('pk')
+        print('the linch is', lunch_id)
+        return super().perform_update(serializer)
+    
+class RedeemLunch(generics.GenericAPIView):
+    serializer_class = LunchSerializers
+    queryset = Lunch.objects.all()
+    lookup_field = 'pk'
+    permission_classes = [IsAuthenticated,]
+    authentication_classes = [TokenAuthentication, BasicAuthentication, SessionAuthentication]
+
+    def put(reqeust, *args, **kwargs):
+        lunch_id = reqeust.kwargs.get('pk')
+        if Lunch.objects.filter(id=lunch_id).exists():
+            lunch = Lunch.objects.get(id= lunch_id)
+
+            reciever_id = lunch.reciever_id
+            #get reciever and credit them
+            # lunch.redeemed = True        
+        
+        return Response({'message': lunch_id})
 
 
 
