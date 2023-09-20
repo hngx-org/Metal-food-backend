@@ -121,45 +121,7 @@ class LoginView(APIView):
                         "user": user.id,
                         "token": access_token
                     })
-        # if login_serializers.is_valid(raise_exception=True): 
-        #     email = request.data.get('email')
-        #     password = request.data.get('password')
 
-        #     user = Users.objects.filter(email=email).first()
-        #     organization = Organization.objects.filter(email=email).first()
-
-        #     # checks if user organzation email exists
-        #     if organization is None and check_password(password=password):
-        #         raise AuthenticationFailed("Email Not found") 
-            
-        #     else:
-        #         refresh = RefreshToken.for_user(user)
-        #         access_token = str(refresh.access_token)
-        #         return response({"message": "User authenticated successfully",
-        #                         "status": 200,
-        #                         "token": access_token,
-        #                         "email": Users.objects.filter(email=email).first(),
-        #                         "id": Users.objects.get(email=email).id,
-        #                         "is_admin": User.is_admin
-        #                         },
-        #                         status=status.HTTP_200_OK)
-
-        #     # checks for organization valid password or user
-        #     # valid password
-        #     if (not user.check_password(password) or
-        #         not organization.check_password(password)
-        #         ):
-        #         raise AuthenticationFailed("Incorrect password")
-            
-        #     else:
-        #         refresh = RefreshToken.for_user(user)
-        #         access_token = str(refresh.access_token)
-             
-        #         return response({"message": "User authenticated successfully",
-        #                         "status": 200,
-        #                         "token": access_token,
-        #                         }
-        #                         status=status.HTTP_200_OK)
 
 class LogoutView(APIView):
     def post(self, request):
