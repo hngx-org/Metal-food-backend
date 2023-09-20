@@ -14,11 +14,12 @@ class UserSerializer(serializers.ModelSerializer):
         extra_kwargs = {'password': {'write_only': True}}
 
 
-
 class StaffRegisterSerializer(serializers.ModelSerializer):
     class Meta:
-        model = User
-        fields = ['first_name', 'last_name', 'email', 'password',]
+        password = serializers.CharField(write_only=True)
+
+        model = Users
+        fields = ['id', 'first_name', 'password', 'last_name', 'email', 'created_at', 'updated_at']
         # extra_kwargs = {'password': {'write_only': True}}
         # required_feilds = ['mobile']
 
