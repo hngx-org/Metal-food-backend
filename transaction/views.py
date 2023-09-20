@@ -51,6 +51,7 @@ class SendLunchView(generics.CreateAPIView):
                 receiverId=receiver_Id['id']
                 quantity=receiver_Id['quantity']
                 Lunches.objects.create(sender_id=senderId, reciever_id=int(receiverId), quantity=quantity, note=note)
-            return Response({"message": "Lunches created successfully"}, status=status.HTTP_201_CREATED)
+            return Response({ "message": "Lunch request created successfully","data": {}}, status=status.HTTP_201_CREATED)
+
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
