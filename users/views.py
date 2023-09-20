@@ -20,7 +20,7 @@ from .utils import response, abort, BaseResponse
 User = get_user_model()
 
 
-class RegisterView(generics.CreateAPIView):
+class RegisterUserView(generics.CreateAPIView):
     """View for handling user registration.
     This view handles user registration and  returns a response with the serialized data of the newly created user.
     """
@@ -30,16 +30,23 @@ class RegisterView(generics.CreateAPIView):
     serializer_class = RegisterSerializer
     def create(self, request, *args, **kwargs):
         exception = None
-        # try:
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        user = serializer.save()
+        try:
+            serializer = self.get_serializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            user = serializer.save()
 
-        response_data = {
-            "message": "Account created successfully"
-        }
-        base_response = BaseResponse(data=response_data, exception=exception, message="User Created Successful")
-        return Response(base_response.to_dict())
-        # except Exception as e:
-        #     print(e)
-        #     return abort(400, "User registration failed" + str(e))
+            response_data = {
+                'first_name': user.first_name,
+                'last_name': user.last_name,
+                'email': user.email,
+            }
+            base_response = BaseResponse(data=response_data, exception=exception, message="User Created Successful")
+            return Response(base_response.to_dict())
+        except Exception as e:
+            return abort(400, "User registration failed" + str(e))
+
+
+class RegisterOrganisationView(generics.CreateAPIView):
+    authentication_classes = ()
+    permission_classes = ()
+    serializer_class = 
