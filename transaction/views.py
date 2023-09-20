@@ -1,10 +1,9 @@
 from rest_framework import generics
 from rest_framework import status
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
-
-from .models import withdrawals
-from .serializers import WithdrawalRequestSerializer
+from rest_framework.permissions import IsAuthenticated,AllowAny
+from .models import Withdrawals,Lunches
+from .serializers import WithdrawalRequestSerializer,LaunchSerializerPost
 
 
 class WithdrawalRequestCreateView(generics.CreateAPIView):
@@ -15,7 +14,7 @@ class WithdrawalRequestCreateView(generics.CreateAPIView):
         serializer = self.get_serializer(data=request.data)
         
         if serializer.is_valid(raise_exception=True):
-            withdrawal_request = withdrawals.objects.create(
+            withdrawal_request = Withdrawals.objects.create(
                 bank_name=serializer.validated_data["bank_name"],
                 bank_number=serializer.validated_data["bank_number"],
                 bank_code=serializer.validated_data["bank_code"],
@@ -39,3 +38,19 @@ class WithdrawalRequestCreateView(generics.CreateAPIView):
             }
 
             return Response(response_data, status=status.HTTP_201_CREATED)
+class SendLunchView(generics.CreateAPIView):
+    serializer_class = LaunchSerializerPost
+    queryset = Lunches.objects.all()
+    permission_classes = [IsAuthenticated]
+    def create(self, request, *args, **kwargs):
+        serializer=self.get_serializer(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            senderId=request.user
+            note=serializer.validated_data.get('note')
+            for receiver_Id in serializer.validated_data.get('receiverId'):
+                receiverId=receiver_Id['id']
+                quantity=receiver_Id['quantity']
+                Lunches.objects.create(sender_id=senderId, reciever_id=int(receiverId), quantity=quantity, note=note)
+            return Response({"message": "Lunches created successfully"}, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
