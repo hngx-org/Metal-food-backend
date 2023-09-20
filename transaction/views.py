@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 
 from .models import Withdrawals
-from .serializers import WithdrawalRequestSerializer
+from .serializers import WithdrawalRequestSerializer, WithdrawalRequestGetSerializer
 from users.models import Users
 
 
@@ -43,7 +43,7 @@ class WithdrawalRequestCreateView(generics.CreateAPIView):
 
 
 class WithdrawalRequestGetView(generics.RetrieveAPIView):
-    serializer_class = WithdrawalRequestSerializer
+    serializer_class = WithdrawalRequestGetSerializer
     permission_classes = [IsAuthenticated]
     
     def get(self, request, *args, **kwargs):
