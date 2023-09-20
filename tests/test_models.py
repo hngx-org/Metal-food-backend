@@ -21,4 +21,36 @@ Author: Brian Obot
 Copyright 2023 Brian Obot
 """
 
-# Your test cases go below this docstring
+import pytest
+
+from transaction.models import LaunchWallet, LaunchTransaction, Transaction, BankAccount, Wallet, Organization, Launch
+from users.models import Staff
+
+
+@pytest.fixture 
+def launch_wallet(staff):
+    return LaunchWallet.objects.create(
+        staff=staff,
+        balance=100.0,
+    )
+
+
+@pytest.fixture
+def lanuch_transaction(staff, org):
+    return LaunchTransaction.objects.create(
+        staff=staff,
+        organization=org,
+        type="some test type",
+    )
+
+
+@pytest.fixture
+def transaction():
+    sender = Staff.objects.create()
+    receiver = Staff.objects.create()
+    return Transaction.objects.create(
+        sender=sender,
+        receiver=receiver,
+        currency="NGN",
+        status="PENDING",
+    )
