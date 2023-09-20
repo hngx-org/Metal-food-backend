@@ -36,12 +36,12 @@ from users.models import User, Staff, Organization
 
 
 @pytest.fixture
-def user():
+def user() -> User:
     return User.objects.create(email="brianobot9@gmail.com", password="testpassword")
 
 
 @pytest.fixture
-def organization():
+def organization() -> Organization:
     return Organization.objects.create(
         name="Test Organization",
         email="testorg@org.com",
@@ -50,7 +50,7 @@ def organization():
 
 
 @pytest.fixture
-def launch_wallet(staff):
+def launch_wallet(staff) -> LaunchWallet:
     return LaunchWallet.objects.create(
         staff=staff,
         balance=100.0,
@@ -58,7 +58,7 @@ def launch_wallet(staff):
 
 
 @pytest.fixture
-def lanuch_transaction(staff, org):
+def lanuch_transaction(staff, org) -> LaunchTransaction:
     return LaunchTransaction.objects.create(
         staff=staff,
         organization=org,
@@ -67,7 +67,7 @@ def lanuch_transaction(staff, org):
 
 
 @pytest.fixture
-def transaction():
+def transaction() -> Transaction:
     sender = Staff.objects.create()
     receiver = Staff.objects.create()
     return Transaction.objects.create(
@@ -79,7 +79,7 @@ def transaction():
 
 
 @pytest.fixture
-def bank_account(user):
+def bank_account(user) -> BankAccount:
     return BankAccount.objects.create(
         number="8073487154",
         name="Brian David Obot",
@@ -90,7 +90,7 @@ def bank_account(user):
 
 
 @pytest.fixture
-def wallet(org):
+def wallet(org) -> Wallet:
     return Wallet.objects.create(
         balance=1000,
         organization=org,
