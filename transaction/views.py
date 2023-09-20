@@ -1,10 +1,27 @@
-from rest_framework import generics
-from rest_framework import status
+from rest_framework import generics, status
+from rest_framework.authentication import TokenAuthentication, BasicAuthentication, SessionAuthentication
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 
-from .models import withdrawals
-from .serializers import WithdrawalRequestSerializer
+from .serializers import WithdrawalRequestSerializer, LunchSerializers
+from .models import Lunch, Withdrawals
+
+
+
+class ListLunchHistory(generics.ListAPIView):
+    serializer_class = LunchSerializers
+    permission_classes = [IsAuthenticated,]
+    authentication_classes = [TokenAuthentication, BasicAuthentication, SessionAuthentication]
+
+
+    def get_queryset(self):
+        user = self.request.user 
+        query_set = Lunch.objects.filter(sender_id=user) | Lunch.objects.filter(receiver_id=user)
+        return query_set
+
+
+
+
 
 
 class WithdrawalRequestCreateView(generics.CreateAPIView):
@@ -15,7 +32,7 @@ class WithdrawalRequestCreateView(generics.CreateAPIView):
         serializer = self.get_serializer(data=request.data)
         
         if serializer.is_valid(raise_exception=True):
-            withdrawal_request = withdrawals.objects.create(
+            withdrawal_request = Withdrawals.objects.create(
                 bank_name=serializer.validated_data["bank_name"],
                 bank_number=serializer.validated_data["bank_number"],
                 bank_code=serializer.validated_data["bank_code"],
