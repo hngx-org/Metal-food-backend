@@ -39,7 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     
     'drf_spectacular',
-    
+    'rest_framework_simplejwt',
     'rest_framework',
     'users',
     'transaction',
