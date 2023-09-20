@@ -90,8 +90,8 @@ class Users(AbstractBaseUser, PermissionsMixin):
 class OrganizationInvites(models.Model):
     org_id = models.ForeignKey(Organization, on_delete=models.CASCADE, related_name="company")
     email = models.EmailField(unique=True)
-    token = models.CharField(max_length=100)
-    TTL = models.DateTimeField()
+    token = models.CharField(max_length=100, null=True)
+    TTL = models.DateTimeField(auto_now=True)
 
     def __str__(self) -> str:
         return self.id

@@ -18,6 +18,6 @@ urlpatterns = [
         
     path('organization/create', OrganizationCreateAPIView.as_view(), name='create-organization'),
     path('organization/invite', CreateInviteView.as_view(), name='invite'),
-    path('api/auth/login/', LoginView.as_view(), name='login')
+    path('auth/login/', LoginView.as_view(), name='login')
 ]
 

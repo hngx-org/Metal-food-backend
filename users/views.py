@@ -41,7 +41,8 @@ class OrganizationCreateAPIView(generics.CreateAPIView):
 class CreateInviteView(generics.CreateAPIView):
     serializer_class = InviteSerializer
     queryset = OrganizationInvites
-
+    permission_classes = [AllowAny]
+    
     def create(self, request):
         token = generate_token()
         email = request.data.get('email')
