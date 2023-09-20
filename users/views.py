@@ -8,7 +8,7 @@ from .serializers import UsersSerializer
 
 class UsersListView(generics.ListAPIView):
     serializer_class = UsersSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.AllowAny]
 
     def get_queryset(self):
         org_id = self.kwargs.get('org_id')
