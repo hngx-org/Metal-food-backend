@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'drf_spectacular',
     
     'rest_framework',
+    'rest_framework.authtoken',
     'users',
     'transaction',
 ]
@@ -142,6 +143,8 @@ SPECTACULAR_SETTINGS = {
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = 'static/'
+
+AUTH_USER_MODEL = 'users.Users'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
