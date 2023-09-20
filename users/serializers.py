@@ -4,7 +4,7 @@ from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from django.contrib.auth import get_user_model
-from  .models import Users, Organization
+from  .models import Users, Organization, OrganizationInvites
 
 
 class GetOrganizationSerializer(serializers.ModelSerializer):
@@ -39,7 +39,21 @@ class GetOrganizationSerializer(serializers.ModelSerializer):
             organization.save()
             return organization
 
- 
+
+class InviteSerializer(serializers.ModelSerializer):
+    # organization = GetOrganizationSerializer(read_only=True)
+    class Meta:
+        model = OrganizationInvites
+        fields = ['organization', 'email', 'token']
+
+    def create(self, validated_data):
+            """Create Organization"""
+            token = self.context.get('token')
+            validated_data['token'] = token
+            invite = OrganizationInvites.objects.create(validated_data)
+            invite.save()
+            return invite
+
 
 
 User = get_user_model()
