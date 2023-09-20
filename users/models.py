@@ -52,11 +52,17 @@ class Users(AbstractBaseUser, PermissionsMixin):
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
 
-
-    class Meta:
-        unique_together= ['id','email']
+    groups = models.ManyToManyField(
+        'auth.Group',
+        blank=True,
+        related_name='customuser_set'
+    )
+    user_permissions = models.ManyToManyField(
+        'auth.Permission',
+        blank=True,
+        related_name='customuser_set'
+    )
     
-
     objects = CustomUserManager()
 
     USERNAME_FIELD = 'email'
@@ -87,4 +93,3 @@ class OrganizationLunchWallet(models.Model):
     def __str__(self) -> str:
         return self.id
 
-# Create your models here.
