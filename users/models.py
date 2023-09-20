@@ -3,7 +3,6 @@ from django.db import models
 
 
 class Organization(models.Model):
-    id = models.BigAutoField(primary_key=True, unique=True)
     name = models.CharField(max_length=50)
     lunch_price = models.DecimalField(max_digits=10, decimal_places=2)
     currency = models.CharField(max_length=3)
@@ -34,8 +33,7 @@ class CustomUserManager(BaseUserManager):
         return self.create_user(email, password, **kwargs)
 
 class Users(AbstractBaseUser, PermissionsMixin):
-    org_id = models.ForeignKey(Organization, on_delete=models.SET_NULL, null=True)
-    id = models.ForeignKey(Organization, on_delete=models.CASCADE, primary_key=True)
+    org_id = models.ForeignKey(Organization, on_delete=models.CASCADE)
     first_name = models.CharField(max_length=255)
     last_name = models.CharField(max_length=255)
     profile_picture = models.ImageField(upload_to='profile_image/', null=True)
@@ -47,7 +45,7 @@ class Users(AbstractBaseUser, PermissionsMixin):
     bank_name = models.CharField(max_length=30, null=True)
     bank_region = models.CharField(max_length=255, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    lunch_credit_balance = models.DecimalField()
+    lunch_credit_balance = models.DecimalField(max_digits=10, decimal_places=2)
     currency = models.CharField(max_length=255)
     currency_code = models.CharField(max_length=10)
     updated_at = models.DateTimeField(auto_now=True)
@@ -74,7 +72,7 @@ class Users(AbstractBaseUser, PermissionsMixin):
         return True 
     
 class OrganizationInvites(models.Model):
-    id = models.ForeignKey(Organization, on_delete=models.CASCADE, primary_key=True)
+    org_id = models.ForeignKey(Organization, on_delete=models.CASCADE, related_name="company")
     email = models.EmailField(unique=True)
     token = models.CharField(max_length=100)
     TTL = models.DateTimeField()
@@ -83,7 +81,6 @@ class OrganizationInvites(models.Model):
         return self.id
 
 class OrganizationLunchWallet(models.Model):
-    id= models.BigAutoField(primary_key=True, unique=True)
     org_id = models.ForeignKey(Organization, on_delete=models.CASCADE)
     balance = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
 
