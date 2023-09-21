@@ -12,6 +12,22 @@ from django.contrib.auth.hashers import check_password
 from rest_framework import permissions
 from django.db import models
 
+
+# Create your views here.
+from rest_framework import generics
+from rest_framework import permissions
+from .models import Users, Organization
+from .serializers import UsersSerializer
+
+class UsersListView(generics.ListAPIView):
+    serializer_class = UsersSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        org_id = self.kwargs.get('org_id')
+        queryset = Users.objects.filter(org_id=org_id)
+        return queryset
+
 from django.contrib.auth import authenticate
 from .utils import response, abort, BaseResponse
 from .models import OrganizationInvites, Users
@@ -119,10 +135,10 @@ class LoginView(APIView):
             email = request.data.get('email')
             password = request.data.get('password')
 
-            user = authenticate(email=email, password=password)
             if not email or not password:
                 raise AuthenticationFailed('Both email and password is required')
 
+            user = authenticate(email=email, password=password)
             if user is not None:
                 if user.is_active:
                     tokens=create_jwt_pair_for_user(user)
@@ -132,7 +148,9 @@ class LoginView(APIView):
                         "id": user.id,
                         "tokens": tokens
                     })
-
+                else:
+                    raise AuthenticationFailed("User Is not active")
+            raise AuthenticationFailed("Invalid Email o password")
 
 class LogoutView(APIView):
     def post(self, request):
@@ -148,6 +166,7 @@ class LogoutView(APIView):
                 return response({"error": str(e)},
                                 status=status.HTTP_400_BAD_REQUEST)
                 
+user-profile
         else:
             return Response({'error': 'Refresh token is required'}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -208,3 +227,8 @@ class UserSearchView(generics.ListAPIView):
         return Response(response, status=status.HTTP_200_OK)
         
     
+
+            else:
+                return Response({'error': 'Refresh token is required'}, status=status.HTTP_400_BAD_REQUEST)
+
+
