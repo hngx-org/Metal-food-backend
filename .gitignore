@@ -4,4 +4,5 @@ db.sqlite3
 .env
 .env/
 env
-denv
+denv/
+
