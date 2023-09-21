@@ -6,8 +6,9 @@ defined in the Django application. Each test case is designed to check specific 
 of the model's functionality, such as field validation, methods, and relationships.
 
 Test cases in this module include:
-    - TestModelTestCase: Tests for the TestModel class.
-    - AnotherModelTestCase: Tests for the AnotherModel class.
+    - TestOrganization: Tests for the Organization Model class.
+    - TestLunchWallet: Tests for the LunchWallet Model class.
+    - TestWithdrawals: Tests for the Withdrawals Model class.
 
 Dependencies:
     - Django: This module assumes that Django is properly installed and configured in
@@ -15,7 +16,7 @@ Dependencies:
 
 Usage:
     - Run the tests using a Django test runner. For example, using the command:
-      `python manage.py test myapp.tests.test_model`
+      `python manage.py pytest`
 
 Author: Brian Obot
 Copyright 2023 Brian Obot
