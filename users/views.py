@@ -33,7 +33,7 @@ from .models import OrganizationInvites, Users
 from rest_framework.exceptions import AuthenticationFailed
 from .utils import response, abort, BaseResponse, generate_token, EmailManager
 from .serializers import (GetOrganizationSerializer, LoginSerializer,
-                          InviteSerializer, RegisterSerializer, UserProfileSerializer, UserGetSerializer))
+                          InviteSerializer, RegisterSerializer, UserProfileSerializer, UserGetSerializer)
 from .tokens import create_jwt_pair_for_user
 
 
