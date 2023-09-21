@@ -1,8 +1,11 @@
 from django.urls import path 
+
 from .views import (
     OrganizationCreateAPIView,
     CreateInviteView,
-    LoginView, RegisterUserView, UsersListView
+    LoginView, RegisterUserView, UsersListView,
+    UserRetrieveView, UserGetView,
+    UserSearchView
 )
 from rest_framework_simplejwt.views import(
         TokenObtainPairView,
@@ -19,7 +22,12 @@ urlpatterns = [
     path('organization/create', OrganizationCreateAPIView.as_view(), name='create-organization'),
     path('organization/invite', CreateInviteView.as_view(), name='invite'),
     path('auth/login/', LoginView.as_view(), name='login'),
+
     path("organization/staff/signup", RegisterUserView.as_view(), name="sign-up"),
     
-    path('user/profile/<int:org_id>/', UsersListView.as_view(), name='users-list')
+    # User profile urls
+    path("user/all/", UserGetView.as_view(), name="users_list"),
+    path('users/<int:org_id>/', UsersListView.as_view(), name='users-list'),
+    path('user/profile/<int:pk>/', UserRetrieveView.as_view(), name='user_detail'),
+    path("search/<str:nameoremail>", UserSearchView.as_view(), name="user_search")
 ]
