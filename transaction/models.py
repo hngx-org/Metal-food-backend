@@ -1,5 +1,4 @@
 from django.db import models
-Lunches
 from users.models import Users
 
 
@@ -28,7 +27,7 @@ class Lunches(models.Model):
         return self.id
 
 class Withdrawals(models.Model):
-Lunches
+
     id = models.BigAutoField(primary_key=True, null=False, editable=False)
     user_id = models.ForeignKey(Users, on_delete=models.CASCADE)
     status= models.CharField(max_length=30)

@@ -6,6 +6,7 @@ from django.core.exceptions import ValidationError
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from django.contrib.auth import get_user_model
 from .models import Users, Organization, OrganizationInvites
+from zeus import settings
 
 
 class GetOrganizationSerializer(serializers.ModelSerializer):
