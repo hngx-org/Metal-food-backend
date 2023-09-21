@@ -17,6 +17,7 @@ from rest_framework.exceptions import AuthenticationFailed
 from .utils import response, abort, BaseResponse, generate_token, EmailManager
 from .serializers import (GetOrganizationSerializer, LoginSerializer,
                           InviteSerializer, RegisterSerializer)
+from .token import create_jwt_pair_for_user
 
 
 # User = get_user_model()
@@ -112,17 +113,15 @@ class LoginView(APIView):
             user = authenticate(email=email, password=password)
             if not email or not password:
                 raise AuthenticationFailed('Both email and password is required')
-            
+
             if user is not None:
                 if user.is_active:
-                   refresh = RefreshToken.for_user(user)
-                   access_token = str(refresh.access_token) 
-   
-                   return Response({
+                    tokens=create_jwt_pair_for_user(user)
+                    return Response({
                         "message": "User authenticated successfully",
                         "status": 200,
-                        "user": user.id,
-                        "token": access_token
+                        "id": user.id,
+                        "tokens": tokens
                     })
 
 
