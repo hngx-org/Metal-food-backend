@@ -32,7 +32,7 @@ from transaction.models import (
     BankAccount,
     Wallet,
     Organization,
-    Withdrawals
+    Withdrawals,
 )
 from users.models import User, Staff, Organization
 
@@ -41,6 +41,8 @@ In order to avoid initial conflicts with my fellow teammate i have placed these 
 within the test_module script, when the merge is complete, this would be moved into a dedicated
 conftest.py module
 """
+
+
 @pytest.fixture
 def user() -> User:
     return User.objects.create(email="brianobot9@gmail.com", password="testpassword")
@@ -64,7 +66,6 @@ def lunch() -> Lunch:
         receiver=receiver,
         quantity=10,
         note="Visit https://brianobot.github.io for your code works",
-
     )
 
 
@@ -128,9 +129,11 @@ def withdrawals(user: User) -> Withdrawals:
 """
 Test Classes here
 """
+
+
 class TestOrganization:
     def test_str_method(self, organization):
-        assert str(organization) == "" # TODO: Replace with the expected result
+        assert str(organization) == ""  # TODO: Replace with the expected result
 
     def test_fields(self, organization: Organization):
         assert organization.email == "testorg@org.com"
@@ -140,8 +143,7 @@ class TestOrganization:
 
 class TestLunch:
     def test_str_method(self, lunch: Lunch):
-        assert str(lunch) == "" # TODO: Replace with the expected result
-
+        assert str(lunch) == ""  # TODO: Replace with the expected result
 
     def test_fields(self, lunch: Lunch):
         assert isinstance(lunch.sender, User)
@@ -152,17 +154,19 @@ class TestLunch:
 
 class TestLunchWallet:
     def test_str_method(self, launch_wallet: LunchWallet):
-        assert str(launch_wallet) == "" # TODO: Replace with the expected result
-    
-    def test_fields(self, launch_wallet: LunchWallet, staff: Staff, organization: Organization):
+        assert str(launch_wallet) == ""  # TODO: Replace with the expected result
+
+    def test_fields(
+        self, launch_wallet: LunchWallet, staff: Staff, organization: Organization
+    ):
         assert launch_wallet.staff == staff
         assert launch_wallet.organization == organization
         assert launch_wallet.type == "some test type"
 
-    
+
 class TestTransaction:
     def test_str_method(self, transaction: Transaction):
-        assert str(transaction) == "" 
+        assert str(transaction) == ""
 
     def test_fields(self, transaction: Transaction):
         assert isinstance(transaction.sender, User)
@@ -173,9 +177,14 @@ class TestTransaction:
 
 class TestLunchTransaction:
     def test_str_method(self, lunch_transaction: LunchTransaction):
-        assert str(lunch_transaction) == "" # TODO: replace with actual expected value
+        assert str(lunch_transaction) == ""  # TODO: replace with actual expected value
 
-    def test_fields(self, lunch_transaction: LunchTransaction, staff: Staff, organization: Organization):
+    def test_fields(
+        self,
+        lunch_transaction: LunchTransaction,
+        staff: Staff,
+        organization: Organization,
+    ):
         assert lunch_transaction.type == "some test type"
         assert isinstance(lunch_transaction.staff, Staff)
         assert isinstance(lunch_transaction.organization, Organization)
@@ -183,7 +192,7 @@ class TestLunchTransaction:
 
 class TestBankAccount:
     def test_str_method(self, bank_account: BankAccount):
-        assert str(bank_account) == "" # TODO: replace with actual expected value
+        assert str(bank_account) == ""  # TODO: replace with actual expected value
 
     def test_fields(self, bank_account: BankAccount):
         assert bank_account.number == "8073487154"
@@ -192,20 +201,20 @@ class TestBankAccount:
         assert bank_account.bank_code == "87618798198"
         assert isinstance(bank_account.user, User)
 
-    
+
 class TestWallet:
     def test_str_methods(self, wallet: Wallet):
-        assert str(bank_account) == "" # TODO: replace with actual expected value
+        assert str(bank_account) == ""  # TODO: replace with actual expected value
 
     def test_fields(self, wallet: Wallet):
         assert wallet.balance == 1000
         assert isinstance(wallet.organization, Organization)
 
-    
+
 class TestWithdrawals:
     def test_str_method(self, withdrawals: Withdrawals):
-        return str(withdrawals) == "" # TODO: Replace with the expected result
-    
+        return str(withdrawals) == ""  # TODO: Replace with the expected result
+
     def test_fields(self, withdrawals: Withdrawals, user: User):
         assert withdrawals.user == user
         assert withdrawals.amount == 1000
