@@ -17,7 +17,7 @@ from rest_framework.exceptions import AuthenticationFailed
 from .utils import response, abort, BaseResponse, generate_token, EmailManager
 from .serializers import (GetOrganizationSerializer, LoginSerializer,
                           InviteSerializer, RegisterSerializer)
-from .token import create_jwt_pair_for_user
+from .tokens import create_jwt_pair_for_user
 
 
 # User = get_user_model()
