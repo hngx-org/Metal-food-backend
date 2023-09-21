@@ -1,6 +1,8 @@
 from .models import Users, Organization, OrganizationInvites
-
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework import serializers
+
+
 
 class RegisterSerializer(serializers.ModelSerializer):
     class Meta:
@@ -28,3 +30,14 @@ class RegisterSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("This username is already in use.")
         return value
 
+
+class LoginSerializer(TokenObtainPairSerializer):
+    """
+    Handles login serializer
+    """
+    email = serializers.EmailField(required=True)
+    password = serializers.CharField(required=True)
+    default_error_messages = {
+        'no_active_account': 'Your account is not active.',
+        'invalid_credentials':'Invalid email or password.',
+    }
