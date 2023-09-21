@@ -79,6 +79,8 @@ class GetALunch(generics.RetrieveAPIView):
     queryset = Lunch.objects.all()
     serializer_class = LunchSerializers
     lookup_field = 'pk'
+    permission_classes = [IsAuthenticated,]
+    authentication_classes = [TokenAuthentication, BasicAuthentication, SessionAuthentication]
 
     def get(self, request, *args, **kwargs):
         lunch_id = kwargs.get('pk')
