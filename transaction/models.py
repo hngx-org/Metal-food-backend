@@ -15,12 +15,14 @@ class Lunches(models.Model):
     def __str__(self) -> str:
         return self.id
 
+
 class Withdrawals(models.Model):
     id = models.BigAutoField(primary_key=True)
-    user_id = models.ForeignKey(Users, on_delete=models.CASCADE)
+    #add this when authentication is complete
+    # user_id = models.ForeignKey(Users, on_delete=models.CASCADE)
     status= models.CharField(max_length=30)
-    amount = models.DecimalField(default=0.00, max_digits=10, decimal_places=2)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
     created_at = models.DateTimeField(auto_now=True)
 
     def __str__(self) -> str:
-        return self.id
+        return f'{self.id}'
