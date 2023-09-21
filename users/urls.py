@@ -26,8 +26,11 @@ urlpatterns = [
     path("organization/staff/signup", RegisterUserView.as_view(), name="sign-up"),
     
     # User profile urls
-    path("user/all/", UserGetView.as_view(), name="users_list"),
-    path('users/<int:org_id>/', UsersListView.as_view(), name='users-list'),
+    path('user/all', UsersListAPIView.as_view(), name='all_users_list'),
+    path('user/all/<int:org_id>', UsersListAPIView.as_view(), name='all_org_users_list'),
     path('user/profile/<int:pk>/', UserRetrieveView.as_view(), name='user_detail'),
     path("search/<str:nameoremail>", UserSearchView.as_view(), name="user_search")
+
+    path("organization/staff/signup", RegisterUserView.as_view(), name="sign-up")
+
 ]

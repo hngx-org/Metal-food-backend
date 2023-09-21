@@ -1,7 +1,7 @@
 from rest_framework import generics
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.exceptions import AuthenticationFailed
 from rest_framework.permissions import AllowAny
@@ -17,15 +17,6 @@ from rest_framework import generics
 from rest_framework import permissions
 from .models import Users, Organization
 from .serializers import UsersSerializer
-
-class UsersListView(generics.ListAPIView):
-    serializer_class = UsersSerializer
-    permission_classes = [permissions.IsAuthenticated]
-
-    def get_queryset(self):
-        org_id = self.kwargs.get('org_id')
-        queryset = Users.objects.filter(org_id=org_id)
-        return queryset
 
 from django.contrib.auth import authenticate
 from .utils import response, abort, BaseResponse
@@ -202,21 +193,6 @@ class UserRetrieveView(generics.RetrieveAPIView):
         return Response(response, status=status.HTTP_200_OK)
 
 
-class UserGetView(generics.ListAPIView):
-    serializer_class = UserGetSerializer
-    queryset = Users.objects.all()
-    
-    def get(self, request, *args, **kwargs):
-        instance = self.get_queryset()
-        serializers = self.get_serializer(instance, many=True)
-        response  = {
-            "message": "Users data fetched successfully",
-            "statusCode": status.HTTP_200_OK,
-            "data": serializers.data
-        }
-        return Response(response, status=status.HTTP_200_OK)
-
-
 class UserSearchView(generics.ListAPIView):
     serializer_class = UserGetSerializer
     queryset = Users.objects.all()
@@ -240,5 +216,4 @@ class UserSearchView(generics.ListAPIView):
             "data": serializers.data
         }
         return Response(response, status=status.HTTP_200_OK)
-        
-    
+
