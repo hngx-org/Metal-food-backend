@@ -13,7 +13,7 @@ class Lunches(models.Model):
     note = models.TextField(null=True)
 
     def __str__(self) -> str:
-        return self.id
+        return self.reciever_id.first_name
 
 class Withdrawals(models.Model):
     id = models.BigAutoField(primary_key=True)

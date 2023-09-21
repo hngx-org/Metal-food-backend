@@ -8,7 +8,6 @@ class WithdrawalRequestSerializer(serializers.Serializer):
 
 class LaunchSerializerPost(serializers.Serializer):
     quantity=serializers.IntegerField()
-    senderId=serializers.IntegerField()
     note=serializers.CharField(required=False, allow_blank=True)
     receivers=serializers.PrimaryKeyRelatedField(queryset=Users.objects.all(),many=True)
 
@@ -20,7 +19,9 @@ class LaunchSerializerPost(serializers.Serializer):
             return value
 
     def validate(self, data):
-        if data['senderId'] in data['receivers']:
+        sender_Id=self.context['senderId']
+        print(sender_Id)
+        if sender_Id in data['receivers']:
             raise serializers.ValidationError("You can't send lunch to yourself")
         else:
             return data
