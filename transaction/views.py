@@ -4,6 +4,8 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated,AllowAny
 from .models import Withdrawals,Lunches
 from .serializers import WithdrawalRequestSerializer,LaunchSerializerPost
+from rest_framework.authentication import BasicAuthentication
+from users.models import Users
 
 
 class WithdrawalRequestCreateView(generics.CreateAPIView):
@@ -42,8 +44,12 @@ class SendLunchView(generics.CreateAPIView):
     serializer_class = LaunchSerializerPost
     queryset = Lunches.objects.all()
     permission_classes = [IsAuthenticated]
+    authentication_classes = [BasicAuthentication]
     def create(self, request, *args, **kwargs):
-        serializer=self.get_serializer(data=request.data)
+        user = Users.objects.get(id=request.user.id)
+        request_data = request.data.copy()
+        request_data['senderId'] = request.user.id
+        serializer=self.get_serializer(data=request_data)
         if serializer.is_valid():
             senderId=request.user.id
             note = serializer.validated_data.get('note')
@@ -54,3 +60,4 @@ class SendLunchView(generics.CreateAPIView):
 
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
