@@ -2,9 +2,7 @@ from django.urls import path
 from .views import (
     OrganizationCreateAPIView,
     CreateInviteView,
-    LoginView, RegisterUserView, 
-    UserRetrieveView, UserGetView,
-    UserSearchView
+    LoginView, RegisterUserView, UsersListView
 )
 from rest_framework_simplejwt.views import(
         TokenObtainPairView,
@@ -23,8 +21,5 @@ urlpatterns = [
     path('auth/login/', LoginView.as_view(), name='login'),
     path("organization/staff/signup", RegisterUserView.as_view(), name="sign-up"),
     
-    # User profile urls
-    path("user/all/", UserGetView.as_view(), name="users_list"),
-    path('user/profile/<int:pk>/', UserRetrieveView.as_view(), name='user_detail'),
-    path("search/<str:nameoremail>", UserSearchView.as_view(), name="user_search")
+    path('user/profile/<int:org_id>/', UsersListView.as_view(), name='users-list')
 ]
