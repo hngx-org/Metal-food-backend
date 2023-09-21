@@ -10,8 +10,7 @@ from rest_framework import serializers, status
 from rest_framework import response
 from django.contrib.auth.hashers import check_password
 from rest_framework import permissions
-from .serializers import UsersSerializer
-
+from django.db import models
 
 # Create your views here.
 from rest_framework import generics
@@ -34,7 +33,7 @@ from .models import OrganizationInvites, Users
 from rest_framework.exceptions import AuthenticationFailed
 from .utils import response, abort, BaseResponse, generate_token, EmailManager
 from .serializers import (GetOrganizationSerializer, LoginSerializer,
-                          InviteSerializer, RegisterSerializer)
+                          InviteSerializer, RegisterSerializer, UserProfileSerializer, UserGetSerializer))
 from .tokens import create_jwt_pair_for_user
 
 
@@ -175,6 +174,61 @@ class UsersListView(generics.ListAPIView):
     def get_queryset(self):
         org_id = self.kwargs.get('org_id')
         queryset = Users.objects.filter(org_id=org_id)
+        return queryset
+    
+    def get(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        serializers = self.get_serializer(queryset, many=True)
+        response = {
+            "message": "User found",
+            "statusCode": status.HTTP_200_OK,
+            "data": serializers.data
+        }
+        return Response(response, status=status.HTTP_200_OK)
+    
+class UserRetrieveView(generics.RetrieveAPIView):
+    serializer_class = UserProfileSerializer
+    permission_classes = [IsAuthenticated]
+    queryset = Users.objects.all()
+
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializers = self.get_serializer(instance)
+        response = {
+            "message": "User data fetched successfully",
+            "statusCode": status.HTTP_200_OK,
+            "data": serializers.data
+        }
+        return Response(response, status=status.HTTP_200_OK)
+
+
+class UserGetView(generics.ListAPIView):
+    serializer_class = UserGetSerializer
+    queryset = Users.objects.all()
+    
+    def get(self, request, *args, **kwargs):
+        instance = self.get_queryset()
+        serializers = self.get_serializer(instance, many=True)
+        response  = {
+            "message": "Users data fetched successfully",
+            "statusCode": status.HTTP_200_OK,
+            "data": serializers.data
+        }
+        return Response(response, status=status.HTTP_200_OK)
+
+
+class UserSearchView(generics.ListAPIView):
+    serializer_class = UserGetSerializer
+    queryset = Users.objects.all()
+    # lookup_field = "nameoremail"
+    
+    def get_queryset(self):
+        name_or_email = self.kwargs.get("nameoremail")
+        queryset = Users.objects.filter(
+            models.Q(first_name__icontains=name_or_email) |
+            models.Q(last_name__icontains=name_or_email) |
+            models.Q(email__icontains=name_or_email)
+        )
         return queryset
     
     def get(self, request, *args, **kwargs):

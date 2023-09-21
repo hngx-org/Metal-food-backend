@@ -109,6 +109,7 @@ class LoginSerializer(TokenObtainPairSerializer):
     
 
 
+
 class UsersSerializer(serializers.ModelSerializer):
     class Meta:
         model = Users
@@ -154,9 +155,3 @@ class UserGetSerializer(serializers.ModelSerializer):
             media_url = settings.MEDIA_URL
             return f"{media_url}{obj.profile_picture}"
         return None
-    
-    
-class UsersSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Users
-        fields = ['id', 'first_name', 'last_name', 'email', 'profile_picture']
