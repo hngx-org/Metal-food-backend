@@ -36,7 +36,7 @@ class Users(models.Model):
 
     
     def __str__(self):
-        return self.name
+        return self.first_name
 
 
 class OrganizationInvites(models.Model):

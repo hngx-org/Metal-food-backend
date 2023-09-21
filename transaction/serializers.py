@@ -20,7 +20,6 @@ class LaunchSerializerPost(serializers.Serializer):
             return value
 
     def validate(self, data):
-
         if data['senderId'] in data['receivers']:
             raise serializers.ValidationError("You can't send lunch to yourself")
         else:

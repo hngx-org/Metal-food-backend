@@ -44,7 +44,10 @@ class SendLunchView(generics.CreateAPIView):
     queryset = Lunches.objects.all()
     permission_classes = [IsAuthenticated]
     def create(self, request, *args, **kwargs):
-        serializer=self.get_serializer(data=request.data)
+        user = Users.objects.get(id=request.user.id)
+        request_data = request.data.copy()
+        request_data['senderId'] = request.user.id
+        serializer=self.get_serializer(data=request_data)
         if serializer.is_valid():
             senderId=request.user.id
             note = serializer.validated_data.get('note')
