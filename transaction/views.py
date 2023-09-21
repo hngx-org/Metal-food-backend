@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated,AllowAny
 from .models import Withdrawals,Lunches
 from .serializers import WithdrawalRequestSerializer,LaunchSerializerPost
-
+from rest_framework.authentication import TokenAuthentication, BasicAuthentication, SessionAuthentication
 
 class WithdrawalRequestCreateView(generics.CreateAPIView):
     serializer_class = WithdrawalRequestSerializer
@@ -40,6 +40,7 @@ class WithdrawalRequestCreateView(generics.CreateAPIView):
             return Response(response_data, status=status.HTTP_201_CREATED)
 class SendLunchView(generics.CreateAPIView):
     serializer_class = LaunchSerializerPost
+    authentication_classes = [TokenAuthentication, BasicAuthentication, SessionAuthentication]
     queryset = Lunches.objects.all()
     permission_classes = [IsAuthenticated]
     def create(self, request, *args, **kwargs):
