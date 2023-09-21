@@ -16,4 +16,10 @@ class WithdrawalRequestSerializer(serializers.Serializer):
     bank_code = serializers.CharField(max_length=30)
 
 
-# create serializer here
+
+class WithdrawalCountSerializer(serializers.Serializer):
+    user_id = serializers.IntegerField()
+    withdrawal_count =serializers.IntegerField()
+
+
+#create serializer here
