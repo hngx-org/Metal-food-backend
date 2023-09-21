@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Lunch
+from .models import Lunch, Withdrawals
 
 
 class LunchSerializers(serializers.ModelSerializer):
