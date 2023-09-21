@@ -7,7 +7,7 @@ from .models import Lunch, Withdrawals
 from .serializers import LunchSerializer, WithdrawalCountSerializer
 
 
-class ListLunchHistory(generics.ListAPIView):
+class GetAllLunch(generics.ListAPIView):
     serializer_class = LunchSerializer
     permission_classes = [IsAuthenticated,]
     authentication_classes = [TokenAuthentication, BasicAuthentication, SessionAuthentication]
