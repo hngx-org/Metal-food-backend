@@ -3,7 +3,7 @@ from rest_framework.authentication import TokenAuthentication, BasicAuthenticati
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 
-from .serializers import WithdrawalRequestSerializer, LunchSerializers
+from .serializers import WithdrawalRequestSerializer, LunchSerializers, WithdrawalCountSerializer
 from .models import Lunch, Withdrawals
 
 
@@ -70,11 +70,11 @@ class WithdrawalCountView(generics.RetrieveAPIView):
     def retrieve(self, request, *args, **kwargs):
         #  count of withdrawal requests for the user
         withdrawal_count = Withdrawals.objects.filter(user=request.user).count()
-        response_data = {
+        serializer = WithdrawalCountSerializer({
             "user_id": request.user.id,
             "withdrawal_count": withdrawal_count,
-        }
+        })
 
-        return Response(response_data, status=status.HTTP_200_OK)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 # Create your views here.        

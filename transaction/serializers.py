@@ -15,3 +15,5 @@ class WithdrawalRequestSerializer(serializers.Serializer):
     bank_name = serializers.CharField(max_length=50)
     bank_code = serializers.CharField(max_length=30)
 
+
+# create serializer here
