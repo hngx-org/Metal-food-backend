@@ -24,13 +24,14 @@ Copyright 2023 Brian Obot
 import pytest
 
 from transaction.models import (
-    LaunchWallet,
-    LaunchTransaction,
+    LunchWallet,
+    LunchTransaction,
     Transaction,
     BankAccount,
     Wallet,
     Organization,
-    Launch,
+    Lunch,
+    Withdrawals
 )
 from users.models import User, Staff, Organization
 
@@ -54,16 +55,16 @@ def organization() -> Organization:
 
 
 @pytest.fixture
-def launch_wallet(staff) -> LaunchWallet:
-    return LaunchWallet.objects.create(
+def lunch_wallet(staff) -> LunchWallet:
+    return LunchWallet.objects.create(
         staff=staff,
         balance=100.0,
     )
 
 
 @pytest.fixture
-def lanuch_transaction(staff, org) -> LaunchTransaction:
-    return LaunchTransaction.objects.create(
+def lunch_transaction(staff, org) -> LunchTransaction:
+    return LunchTransaction.objects.create(
         staff=staff,
         organization=org,
         type="some test type",
@@ -101,6 +102,15 @@ def wallet(org) -> Wallet:
     )
 
 
+@pytest.fixture
+def withdrawals(user: User) -> Withdrawals:
+    return Withdrawals.objects.create(
+        user=user,
+        amount=1000,
+        status="SUCCESSFUL",
+    )
+
+
 """
 Test Classes here
 """
@@ -114,13 +124,24 @@ class TestOrganization:
         assert organization.role == "Humanitarian"
 
 
-class TestLaunchWallet:
-    def test_str_method(self, launch_wallet: LaunchWallet):
+class TestLunchWallet:
+    def test_str_method(self, launch_wallet: LunchWallet):
         return str(launch_wallet) == "" # TODO: Replace with the expected result
     
-    def test_fields(self, launch_wallet: LaunchWallet, staff: Staff, organization: Organization):
+    def test_fields(self, launch_wallet: LunchWallet, staff: Staff, organization: Organization):
         assert launch_wallet.staff == staff
         assert launch_wallet.organization == organization
         assert launch_wallet.type == "some test type"
 
 
+class TestWithdrawals:
+    def test_str_method(self, withdrawals: Withdrawals):
+        return str(withdrawals) == "" # TODO: Replace with the expected result
+    
+    def test_fields(self, withdrawals: Withdrawals, user: User):
+        assert withdrawals.user == user
+        assert withdrawals.amount == 1000
+        assert withdrawals.status == "SUCCESSFUL"
+        assert getattr(withdrawals, "created_at") is not None
+
+    
