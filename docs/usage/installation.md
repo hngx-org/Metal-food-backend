@@ -10,22 +10,22 @@ This document provides step-by-step instructions for installing and setting up t
 ## Installation
 
 Follow the steps below to get started using the free lunch application:
-1. ### Clone the Repository
+### Clone the Repository
 In your terminal, paste and run the command `git clone https://github.com/hngx-org/Metal-food-backend.git`.
 
-2. ### Navigate to the Project Directory
+### Navigate to the Project Directory
 Run the command `cd Metal-food-backend`.
 
-3. ### Set up a Virtual Envirionment
+### Set up a Virtual Envirionment
 You can (optionally) set up and activate a virtual environment. To achieve this, run the following command: `python3 -m venv venv`. This command uses Python 3 to create a virtual environment named venv, which will be created inside your project directory.
 
-4. ### Activate the Virtual Environment
+### Activate the Virtual Environment
 To activate the virtual environment, run the appropriate command based on your operating system.
 - **On Windows**, run: `venv\Scripts\activate`.
 - **On Linux or macOS**, run: `source venv/bin/activate`.
     At any point, you can deactivate the virtual environment by simply running the command: `deactivate`.
 
-4. **Install dependencies**
+### Install dependencies
 To ensure you have the required packages needed to start using the application, run the command `pip install -r requirements.txt` to install the required dependencies.
 
 ## Running the Application
