@@ -75,7 +75,32 @@ class RedeemLunch(generics.GenericAPIView):
                 'statusCode': status.HTTP_404_NOT_FOUND
             }, status= status.HTTP_404_NOT_FOUND)
 
+class GetALunch(generics.RetrieveAPIView):
+    queryset = Lunch.objects.all()
+    serializer_class = LunchSerializers
+    lookup_field = 'pk'
 
+    def get(self, request, *args, **kwargs):
+        lunch_id = kwargs.get('pk')
+        try:
+            lunch = Lunch.objects.get(id= lunch_id)
+        except Lunch.DoesNotExist:
+            lunch = None
+            return Response({'message': 'Lunch does not exist'})
+        
+        if lunch is not None:
+            context = {
+                'message': 'Lunch found',
+                'statusCode': status.HTTP_200_OK,
+                'data': lunch
+            }
+
+            return Response(context, status=status.HTTP_200_OK)
+        return super().get(request, *args, **kwargs)
+
+    def get_queryset(self):
+        return super().get_queryset()
+    
 
 class WithdrawalRequestCreateView(generics.CreateAPIView):
     serializer_class = WithdrawalRequestSerializer
