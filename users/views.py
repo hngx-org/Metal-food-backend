@@ -1,7 +1,7 @@
 from rest_framework import generics
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.exceptions import AuthenticationFailed
 from rest_framework.permissions import AllowAny
@@ -16,7 +16,7 @@ from .models import OrganizationInvites, Users
 from rest_framework.exceptions import AuthenticationFailed
 from .utils import response, abort, BaseResponse, generate_token, EmailManager
 from .serializers import (GetOrganizationSerializer, LoginSerializer,
-                          InviteSerializer, RegisterSerializer)
+                          InviteSerializer, RegisterSerializer, UserListSerializer)
 from .tokens import create_jwt_pair_for_user
 
 
@@ -149,3 +149,15 @@ class LogoutView(APIView):
                 
             else:
                 return Response({'error': 'Refresh token is required'}, status=status.HTTP_400_BAD_REQUEST)
+
+class UsersListAPIView(generics.ListAPIView):
+    permission_classes = [AllowAny]
+    serializer_class = UserListSerializer
+
+    def get_queryset(self):
+        org_id = self.kwargs.get('org_id', None)
+        if org_id:
+            queryset = Users.objects.filter(org_id=org_id)
+        else:
+            queryset = Users.objects.all()
+        return queryset
