@@ -25,3 +25,5 @@ class LaunchSerializerPost(serializers.Serializer):
             raise serializers.ValidationError("You can't send lunch to yourself")
         else:
             return data
+class RedeemSerialize(serializers.Serializer):
+    id=serializers.ListField(child=serializers.IntegerField(),allow_empty=False)

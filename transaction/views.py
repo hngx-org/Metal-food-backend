@@ -1,9 +1,10 @@
 from rest_framework import generics
 from rest_framework import status
+from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated,AllowAny
 from .models import Withdrawals,Lunches
-from .serializers import WithdrawalRequestSerializer,LaunchSerializerPost
+from .serializers import WithdrawalRequestSerializer,LaunchSerializerPost,RedeemSerialize
 from rest_framework.authentication import TokenAuthentication, BasicAuthentication, SessionAuthentication
 from users.models import Users
 class WithdrawalRequestCreateView(generics.CreateAPIView):
@@ -55,3 +56,17 @@ class SendLunchView(generics.CreateAPIView):
             return Response({ "message": "Lunch request created successfully","data": {}}, status=status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+class RedeemLunchView(APIView):
+    authentication_classes = [TokenAuthentication, BasicAuthentication, SessionAuthentication]
+    permission_classes = [IsAuthenticated]
+    def post(self, request, *args, **kwargs):
+        serializer = RedeemSerialize(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            for lunchId in serializer.validated_data.get('id'):
+                lunch=Lunches.objects.get(id=lunchId)
+                lunch_credit=lunch.quantity
+                lunch.redeemed=True
+                sender = Users.objects.get(id=request.user.id)
+                sender.lunch_credit_balance+=lunch_credit
+                sender.save()
+            return Response({ "message": "success",  "statusCode": 200,"data": "null"})
