@@ -9,7 +9,7 @@ class UpdateOrganizationLunchWallet(APIView):
     Title: Update Organization launch wallet balance
     Description: Description: Allows an admin user to update wallet balance.
 
-    Endpoint: /api/organization/wallet/update
+    Endpoint: /api/<id>/organization/wallet/update
     Method:PATCH
     """
     queryset = OrganizationLunchWallet.objects.all()
