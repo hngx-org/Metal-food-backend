@@ -1,6 +1,7 @@
 import requests
 import pytest
 
+# important!: include the base url before running test 
 base_url = ""
 
 # Define access token for authentication
