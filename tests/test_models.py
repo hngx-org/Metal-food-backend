@@ -25,13 +25,13 @@ Copyright 2023 Brian Obot
 import pytest
 
 from transaction.models import (
+    Lunch,
     LunchWallet,
     LunchTransaction,
     Transaction,
     BankAccount,
     Wallet,
     Organization,
-    Lunch,
     Withdrawals
 )
 from users.models import User, Staff, Organization
@@ -52,6 +52,19 @@ def organization() -> Organization:
         name="Test Organization",
         email="testorg@org.com",
         role="Humanitarian",
+    )
+
+
+@pytest.fixture
+def lunch() -> Lunch:
+    sender = User.objects.create()
+    receiver = User.objects.create()
+    return Lunch.objects.create(
+        sender=sender,
+        receiver=receiver,
+        quantity=10,
+        note="Visit https://brianobot.github.io for your code works",
+
     )
 
 
@@ -125,16 +138,70 @@ class TestOrganization:
         assert organization.role == "Humanitarian"
 
 
+class TestLunch:
+    def test_str_method(self, lunch: Lunch):
+        assert str(lunch) == "" # TODO: Replace with the expected result
+
+
+    def test_fields(self, lunch: Lunch):
+        assert isinstance(lunch.sender, User)
+        assert isinstance(lunch.receiver, User)
+        assert lunch.quantity == 10
+        assert lunch.note == "Visit https://brianobot.github.io for your code works"
+
+
 class TestLunchWallet:
     def test_str_method(self, launch_wallet: LunchWallet):
-        return str(launch_wallet) == "" # TODO: Replace with the expected result
+        assert str(launch_wallet) == "" # TODO: Replace with the expected result
     
     def test_fields(self, launch_wallet: LunchWallet, staff: Staff, organization: Organization):
         assert launch_wallet.staff == staff
         assert launch_wallet.organization == organization
         assert launch_wallet.type == "some test type"
 
+    
+class TestTransaction:
+    def test_str_method(self, transaction: Transaction):
+        assert str(transaction) == "" 
 
+    def test_fields(self, transaction: Transaction):
+        assert isinstance(transaction.sender, User)
+        assert isinstance(transaction.receiver, User)
+        assert transaction.currency == "NGN"
+        assert transaction.status == "PENDING"
+
+
+class TestLunchTransaction:
+    def test_str_method(self, lunch_transaction: LunchTransaction):
+        assert str(lunch_transaction) == "" # TODO: replace with actual expected value
+
+    def test_fields(self, lunch_transaction: LunchTransaction, staff: Staff, organization: Organization):
+        assert lunch_transaction.type == "some test type"
+        assert isinstance(lunch_transaction.staff, Staff)
+        assert isinstance(lunch_transaction.organization, Organization)
+
+
+class TestBankAccount:
+    def test_str_method(self, bank_account: BankAccount):
+        assert str(bank_account) == "" # TODO: replace with actual expected value
+
+    def test_fields(self, bank_account: BankAccount):
+        assert bank_account.number == "8073487154"
+        assert bank_account.name == "Brian David Obot"
+        assert bank_account.bank_name == "Opay"
+        assert bank_account.bank_code == "87618798198"
+        assert isinstance(bank_account.user, User)
+
+    
+class TestWallet:
+    def test_str_methods(self, wallet: Wallet):
+        assert str(bank_account) == "" # TODO: replace with actual expected value
+
+    def test_fields(self, wallet: Wallet):
+        assert wallet.balance == 1000
+        assert isinstance(wallet.organization, Organization)
+
+    
 class TestWithdrawals:
     def test_str_method(self, withdrawals: Withdrawals):
         return str(withdrawals) == "" # TODO: Replace with the expected result
@@ -144,5 +211,3 @@ class TestWithdrawals:
         assert withdrawals.amount == 1000
         assert withdrawals.status == "SUCCESSFUL"
         assert getattr(withdrawals, "created_at") is not None
-
-    
