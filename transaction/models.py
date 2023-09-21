@@ -18,7 +18,7 @@ class Lunches(models.Model):
 
 class Withdrawals(models.Model):
     id = models.BigAutoField(primary_key=True)
-    user_id = models.ForeignKey(Users, on_delete=models.CASCADE)
+    user_id = models.ForeignKey(Users, on_delete=models.CASCADE, related_name='id_user')
     status= models.CharField(max_length=30)
     amount = models.DecimalField(default=0.00, max_digits=10, decimal_places=2)
     created_at = models.DateTimeField(auto_now=True)

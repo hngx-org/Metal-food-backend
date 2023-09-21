@@ -1,3 +1,6 @@
 venv/
 db.sqlite3
 */migrations/*
+profile_image/
+__pycache__/
+
