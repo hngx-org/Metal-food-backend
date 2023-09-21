@@ -12,7 +12,7 @@ from django.contrib.auth.hashers import check_password
 
 from django.contrib.auth import authenticate
 from .utils import response, abort, BaseResponse
-from .models import OrganizationInvites
+from .models import OrganizationInvites, Users
 from rest_framework.exceptions import AuthenticationFailed
 from .utils import response, abort, BaseResponse, generate_token, EmailManager
 from .serializers import (GetOrganizationSerializer, LoginSerializer,
@@ -73,16 +73,21 @@ class CreateInviteView(generics.CreateAPIView):
 
 class RegisterUserView(generics.CreateAPIView):
     """View for handling user registration.
-    This view handles user registration and  returns a response with the serialized data of the newly created user.
+    This view handles user registration and returns a response with the serialized data of the newly created user.
     """
 
     authentication_classes = ()
     permission_classes = ()
     serializer_class = RegisterSerializer
+
     def create(self, request, *args, **kwargs):
         exception = None
         try:
-            serializer = self.get_serializer(data=request.data)
+            email = request.data.get('email')
+            org_invite = OrganizationInvites.objects.filter(email=email).first()
+            org = org_invite.org_id if org_invite else None
+
+            serializer = RegisterSerializer(data=request.data, context={'org': org})
             serializer.is_valid(raise_exception=True)
             user = serializer.save()
 
@@ -91,10 +96,11 @@ class RegisterUserView(generics.CreateAPIView):
                 'last_name': user.last_name,
                 'email': user.email,
             }
-            base_response = BaseResponse(data=response_data, exception=exception, message="User Created Successful")
-            return Response(base_response.to_dict())
+            base_response = BaseResponse(data=response_data,exception=exception, message="User Created Successfully")
+            return Response(base_response.to_dict(), status=status.HTTP_201_CREATED)
+
         except Exception as e:
-            return abort(400, "User registration failed" + str(e))
+            return abort(404, "Email not invited")
 
 
 class LoginView(APIView):

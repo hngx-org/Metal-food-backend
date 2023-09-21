@@ -25,7 +25,7 @@ class CustomUserManager(BaseUserManager):
         return self.create_user(email, password, **kwargs)
 
 class Organization(AbstractBaseUser, PermissionsMixin):
-    name = models.CharField(max_length=50, unique=True)
+    name = models.CharField(max_length=50, unique=True, null=False)
     email = models.EmailField(unique=True, null=False, blank=False)
     lunch_price = models.DecimalField(max_digits=10, decimal_places=2, default=1000.00)
     currency = models.CharField(max_length=3, default='NGN')
