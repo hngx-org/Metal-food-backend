@@ -1,7 +1,7 @@
 from rest_framework import generics
 from rest_framework import status
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 
 from .models import Withdrawals
 from .serializers import WithdrawalRequestSerializer, WithdrawalRequestGetSerializer
@@ -10,18 +10,22 @@ from users.models import Users
 
 class WithdrawalRequestCreateView(generics.CreateAPIView):
     serializer_class = WithdrawalRequestSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         
         if serializer.is_valid(raise_exception=True):
+            bank_name=serializer.validated_data["bank_name"],
+            bank_account=serializer.validated_data["bank_account"],
+            bank_code=serializer.validated_data["bank_code"],
+            amount=serializer.validated_data["amount"],
+            
             withdrawal_request = Withdrawals.objects.create(
-                bank_name=serializer.validated_data["bank_name"],
-                bank_number=serializer.validated_data["bank_number"],
-                bank_code=serializer.validated_data["bank_code"],
-                amount=serializer.validated_data["amount"],
-                user=request.user
+                # user_id=request.user, 
+                user_id=1,
+                status="pending",
+                amount=amount,
             )
 
             withdrawal_request.status = "success"
