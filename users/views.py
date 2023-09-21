@@ -120,13 +120,11 @@ class RegisterUserView(generics.CreateAPIView):
         except Exception as e:
             return abort(404, "Email not invited")
 
+from rest_framework.response import Response
 
 class LoginView(APIView):
-    """
-     handles both organizatio and user
-     login requests
-    """
-    permission_classes = []
+    
+    permission_classes = [AllowAny]
     
     def post(self, request):
         login_serializer = LoginSerializer(data=request.data)
@@ -139,19 +137,33 @@ class LoginView(APIView):
                 raise AuthenticationFailed('Both email and password is required')
 
             user = authenticate(email=email, password=password)
-            if user is not None:
-                if user.is_active:
-                    tokens=create_jwt_pair_for_user(user)
-                    return Response({
-                        "message": "User authenticated successfully",
-                        "status": 200,
-                        "id": user.id,
-                        "tokens": tokens
-                    })
-                else:
-                    raise AuthenticationFailed("User Is not active")
-            raise AuthenticationFailed("Invalid Email o password")
+            if user is None:
+                
+                return Response(
+                    {'message':'incorret credentials '}, 
+                    status=status.HTTP_401_UNAUTHORIZED
+                )
+                
+            if not user.is_active:
+                
+                return Response(
+                        {"message": 'user is not active'},
+                        status=status.HTTP_401_UNAUTHORIZED
+                    )
 
+            else:
+                
+                    
+                tokens=create_jwt_pair_for_user(user)
+                    
+                return Response({
+                    "message": " logged in successfully",
+                    "status": 200,
+                    "id": user.id,
+                    "tokens": tokens
+                })
+
+                    
 class LogoutView(APIView):
     def post(self, request):
         refresh_token = request.data.get('refresh_token')
@@ -166,8 +178,12 @@ class LogoutView(APIView):
                 return response({"error": str(e)},
                                 status=status.HTTP_400_BAD_REQUEST)
                 
-user-profile
-        else:
+            else:
+                
+                return Response({'error': 'Refresh token is required'}, status=status.HTTP_400_BAD_REQUEST)
+             
+        
+            
             return Response({'error': 'Refresh token is required'}, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -219,16 +235,26 @@ class UserSearchView(generics.ListAPIView):
     def get(self, request, *args, **kwargs):
         queryset = self.get_queryset()
         serializers = self.get_serializer(queryset, many=True)
-        response = {
+        if serializers.is_valid():
+            
+            response = {
             "message": "User found",
             "statusCode": status.HTTP_200_OK,
             "data": serializers.data
-        }
-        return Response(response, status=status.HTTP_200_OK)
+            }
+            
+            
+            return Response(response, status=status.HTTP_200_OK)
+         
+        else:
+            return Response({'error': 'Refresh token is required'}, status=status.HTTP_400_BAD_REQUEST)
+
+            
+        
+        
+
+    
         
     
 
-            else:
-                return Response({'error': 'Refresh token is required'}, status=status.HTTP_400_BAD_REQUEST)
-
-
+            

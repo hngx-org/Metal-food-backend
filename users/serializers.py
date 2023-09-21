@@ -1,5 +1,5 @@
 from rest_framework import serializers
-Lunches
+
 from .models import Users
 
 class UsersSerializer(serializers.ModelSerializer):
@@ -107,13 +107,15 @@ class RegisterSerializer(serializers.ModelSerializer):
 
 
 
-class LoginSerializer(TokenObtainPairSerializer):
+class LoginSerializer(serializers.Serializer):
     email = serializers.EmailField(required=True)
     password = serializers.CharField(required=True)
-    default_error_messages = {
-        'no_active_account': 'Your account is not active.',
-        'invalid_credentials':'Invalid email or password.',
-    }
+        
+    
+    # default_error_messages = {
+    #     'no_active_account': 'Your account is not active.',
+    #     'invalid_credentials':'Invalid email or password.',
+    # }
 
     
 
