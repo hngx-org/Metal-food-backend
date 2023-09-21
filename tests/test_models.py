@@ -34,7 +34,11 @@ from transaction.models import (
 )
 from users.models import User, Staff, Organization
 
-
+"""
+In order to avoid initial conflicts with my fellow teammate i have placed these fixtures
+within the test_module script, when the merge is complete, this would be moved into a dedicated
+conftest.py module
+"""
 @pytest.fixture
 def user() -> User:
     return User.objects.create(email="brianobot9@gmail.com", password="testpassword")
@@ -95,3 +99,28 @@ def wallet(org) -> Wallet:
         balance=1000,
         organization=org,
     )
+
+
+"""
+Test Classes here
+"""
+class TestOrganization:
+    def test_str_method(self, organization):
+        assert str(organization) == "" # TODO: Replace with the expected result
+
+    def test_fields(self, organization: Organization):
+        assert organization.email == "testorg@org.com"
+        assert organization.name == "Test Organization"
+        assert organization.role == "Humanitarian"
+
+
+class TestLaunchWallet:
+    def test_str_method(self, launch_wallet: LaunchWallet):
+        return str(launch_wallet) == "" # TODO: Replace with the expected result
+    
+    def test_fields(self, launch_wallet: LaunchWallet, staff: Staff, organization: Organization):
+        assert launch_wallet.staff == staff
+        assert launch_wallet.organization == organization
+        assert launch_wallet.type == "some test type"
+
+
