@@ -1,3 +1,9 @@
+'''
+Unit tests for the django application urls
+this tests validates that the url is linked with the appropriate views
+
+to run tests use the command "python manage.py test tests"
+'''
 from django.test import SimpleTestCase
 from django.urls import reverse, resolve 
 from transaction.views import (
