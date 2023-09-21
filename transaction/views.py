@@ -5,7 +5,7 @@ from rest_framework.permissions import IsAuthenticated,AllowAny
 from .models import Withdrawals,Lunches
 from .serializers import WithdrawalRequestSerializer,LaunchSerializerPost
 from rest_framework.authentication import TokenAuthentication, BasicAuthentication, SessionAuthentication
-
+from django.contrib.auth.models import User
 class WithdrawalRequestCreateView(generics.CreateAPIView):
     serializer_class = WithdrawalRequestSerializer
     permission_classes = [IsAuthenticated]
@@ -44,7 +44,7 @@ class SendLunchView(generics.CreateAPIView):
     queryset = Lunches.objects.all()
     permission_classes = [IsAuthenticated]
     def create(self, request, *args, **kwargs):
-        user = Users.objects.get(id=request.user.id)
+        user = User.objects.get(id=request.user.id)
         request_data = request.data.copy()
         request_data['senderId'] = request.user.id
         serializer=self.get_serializer(data=request_data)
