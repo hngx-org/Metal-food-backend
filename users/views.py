@@ -1,7 +1,7 @@
 from rest_framework import generics
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.exceptions import AuthenticationFailed
 from rest_framework.permissions import AllowAny
@@ -187,21 +187,6 @@ class UserRetrieveView(generics.RetrieveAPIView):
         return Response(response, status=status.HTTP_200_OK)
 
 
-class UserGetView(generics.ListAPIView):
-    serializer_class = UserGetSerializer
-    queryset = Users.objects.all()
-    
-    def get(self, request, *args, **kwargs):
-        instance = self.get_queryset()
-        serializers = self.get_serializer(instance, many=True)
-        response  = {
-            "message": "Users data fetched successfully",
-            "statusCode": status.HTTP_200_OK,
-            "data": serializers.data
-        }
-        return Response(response, status=status.HTTP_200_OK)
-
-
 class UserSearchView(generics.ListAPIView):
     serializer_class = UserGetSerializer
     queryset = Users.objects.all()
@@ -231,4 +216,16 @@ class UserSearchView(generics.ListAPIView):
             else:
                 return Response({'error': 'Refresh token is required'}, status=status.HTTP_400_BAD_REQUEST)
 
+
+class UsersListAPIView(generics.ListAPIView):
+    permission_classes = [AllowAny]
+    serializer_class = UserGetSerializer
+
+    def get_queryset(self):
+        org_id = self.kwargs.get('org_id', None)
+        if org_id:
+            queryset = Users.objects.filter(org_id=org_id)
+        else:
+            queryset = Users.objects.all()
+        return queryset
 
