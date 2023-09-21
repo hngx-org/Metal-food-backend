@@ -1,2 +1,12 @@
+Lunches
 venv/
 __pycache__/
+env
+__pycache__/
+db.sqlite3
+venv/
+/migrations
+.env/
+migrations/
+.vscode/
+default
