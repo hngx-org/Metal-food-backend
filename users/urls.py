@@ -1,4 +1,11 @@
 from django.urls import path 
+Lunches
+from .views import UsersListView
+
+urlpatterns = [
+    path('users/<int:org_id>/', UsersListView.as_view(), name='users-list'),
+]
+
 from .views import (
     OrganizationCreateAPIView,
     CreateInviteView,
@@ -21,3 +28,4 @@ urlpatterns = [
     path('auth/login/', LoginView.as_view(), name='login'),
     path("organization/staff/signup", RegisterUserView.as_view(), name="sign-up")
 ]
+default

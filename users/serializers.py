@@ -1,4 +1,14 @@
 from rest_framework import serializers
+Lunches
+from .models import Users
+
+class UsersSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Users
+        fields = ['id', 'first_name', 'last_name', 'email', 'profile_picture']
+
+
+
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
@@ -103,3 +113,4 @@ class LoginSerializer(TokenObtainPairSerializer):
         'no_active_account': 'Your account is not active.',
         'invalid_credentials':'Invalid email or password.',
     }
+default
