@@ -74,7 +74,7 @@ class RedeemLunch(generics.GenericAPIView):
                 'message': 'Lunch not found',
                 'statusCode': status.HTTP_404_NOT_FOUND
             }, status= status.HTTP_404_NOT_FOUND)
-
+        
 class GetALunch(generics.RetrieveAPIView):
     queryset = Lunch.objects.all()
     serializer_class = LunchSerializers
@@ -91,10 +91,19 @@ class GetALunch(generics.RetrieveAPIView):
             return Response({'message': 'Lunch does not exist'})
         
         if lunch is not None:
+            lunch_dict = {
+                'id': lunch.id,
+                'sender_id': lunch.sender_id.id,
+                'receiver_id': lunch.reciever_id.id,
+                'quantity': lunch.quantity,
+                'redeemed': lunch.redeemed,
+                'note': lunch.note,
+                'created_at': lunch.created_at.strftime('%Y-%m-%d %H:%M:%S')  # Convert DateTimeField to string
+            }
             context = {
                 'message': 'Lunch found',
                 'statusCode': status.HTTP_200_OK,
-                'data': lunch
+                'data': lunch_dict
             }
 
             return Response(context, status=status.HTTP_200_OK)
