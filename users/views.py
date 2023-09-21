@@ -116,10 +116,10 @@ class LoginView(APIView):
             email = request.data.get('email')
             password = request.data.get('password')
 
-            user = authenticate(email=email, password=password)
             if not email or not password:
                 raise AuthenticationFailed('Both email and password is required')
 
+            user = authenticate(email=email, password=password)
             if user is not None:
                 if user.is_active:
                     tokens=create_jwt_pair_for_user(user)
@@ -129,7 +129,9 @@ class LoginView(APIView):
                         "id": user.id,
                         "tokens": tokens
                     })
-
+                else:
+                    raise AuthenticationFailed("User Is not active")
+            raise AuthenticationFailed("Invalid Email o password")
 
 class LogoutView(APIView):
     def post(self, request):

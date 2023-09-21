@@ -21,4 +21,3 @@ urlpatterns = [
     path('auth/login/', LoginView.as_view(), name='login'),
     path("organization/staff/signup", RegisterUserView.as_view(), name="sign-up")
 ]
-
