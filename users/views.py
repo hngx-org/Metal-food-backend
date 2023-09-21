@@ -12,21 +12,11 @@ from django.contrib.auth.hashers import check_password
 from rest_framework import permissions
 from django.db import models
 
-
 # Create your views here.
 from rest_framework import generics
 from rest_framework import permissions
 from .models import Users, Organization
 from .serializers import UsersSerializer
-
-class UsersListView(generics.ListAPIView):
-    serializer_class = UsersSerializer
-    permission_classes = [permissions.IsAuthenticated]
-
-    def get_queryset(self):
-        org_id = self.kwargs.get('org_id')
-        queryset = Users.objects.filter(org_id=org_id)
-        return queryset
 
 from django.contrib.auth import authenticate
 from .utils import response, abort, BaseResponse
@@ -126,7 +116,6 @@ class LoginView(APIView):
      handles both organizatio and user
      login requests
     """
-    permission_classes = []
     
     def post(self, request):
         login_serializer = LoginSerializer(data=request.data)
@@ -166,11 +155,28 @@ class LogoutView(APIView):
                 return response({"error": str(e)},
                                 status=status.HTTP_400_BAD_REQUEST)
                 
-user-profile
         else:
             return Response({'error': 'Refresh token is required'}, status=status.HTTP_400_BAD_REQUEST)
 
+class UsersListView(generics.ListAPIView):
+    serializer_class = UsersSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
+    def get_queryset(self):
+        org_id = self.kwargs.get('org_id')
+        queryset = Users.objects.filter(org_id=org_id)
+        return queryset
+    
+    def get(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        serializers = self.get_serializer(queryset, many=True)
+        response = {
+            "message": "User found",
+            "statusCode": status.HTTP_200_OK,
+            "data": serializers.data
+        }
+        return Response(response, status=status.HTTP_200_OK)
+    
 class UserRetrieveView(generics.RetrieveAPIView):
     serializer_class = UserProfileSerializer
     permission_classes = [IsAuthenticated]
@@ -210,22 +216,4 @@ class UserSearchView(generics.ListAPIView):
             "data": serializers.data
         }
         return Response(response, status=status.HTTP_200_OK)
-        
-    
-
-            else:
-                return Response({'error': 'Refresh token is required'}, status=status.HTTP_400_BAD_REQUEST)
-
-
-class UsersListAPIView(generics.ListAPIView):
-    permission_classes = [AllowAny]
-    serializer_class = UserGetSerializer
-
-    def get_queryset(self):
-        org_id = self.kwargs.get('org_id', None)
-        if org_id:
-            queryset = Users.objects.filter(org_id=org_id)
-        else:
-            queryset = Users.objects.all()
-        return queryset
 

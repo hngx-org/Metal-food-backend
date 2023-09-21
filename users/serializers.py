@@ -1,20 +1,11 @@
 from rest_framework import serializers
-Lunches
-from .models import Users
-
-class UsersSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Users
-        fields = ['id', 'first_name', 'last_name', 'email', 'profile_picture']
-
-
 
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from django.contrib.auth import get_user_model
-from  .models import Users, Organization, OrganizationInvites
+from .models import Users, Organization, OrganizationInvites
 from zeus import settings
 
 
@@ -118,6 +109,7 @@ class LoginSerializer(TokenObtainPairSerializer):
     
 
 
+
 class UsersSerializer(serializers.ModelSerializer):
     class Meta:
         model = Users
@@ -163,4 +155,3 @@ class UserGetSerializer(serializers.ModelSerializer):
             media_url = settings.MEDIA_URL
             return f"{media_url}{obj.profile_picture}"
         return None
-

@@ -115,7 +115,7 @@ class OrganizationLunchWallet(models.Model):
     def __str__(self) -> str:
         return str(self.id)
 
-Lunches
+
 # Create your models here.
 class Organization(models.Model):
     id = models.BigAutoField(primary_key=True, unique=True)
@@ -172,4 +172,3 @@ class OrganizationLunchWallet(models.Model):
     def __str__(self) -> str:
         return self.id
     
-default

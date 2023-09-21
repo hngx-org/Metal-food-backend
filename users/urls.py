@@ -1,16 +1,10 @@
 from django.urls import path 
-Lunches
-from .views import UsersListView
-
-urlpatterns = [
-    path('users/<int:org_id>/', UsersListView.as_view(), name='users-list'),
-]
 
 from .views import (
     OrganizationCreateAPIView,
     CreateInviteView,
-    LoginView, RegisterUserView, 
-    UserRetrieveView, UsersListAPIView,
+    LoginView, RegisterUserView, UsersListView,
+    UserRetrieveView, UserGetView,
     UserSearchView
 )
 from rest_framework_simplejwt.views import(
@@ -38,4 +32,5 @@ urlpatterns = [
     path("search/<str:nameoremail>", UserSearchView.as_view(), name="user_search")
 
     path("organization/staff/signup", RegisterUserView.as_view(), name="sign-up")
+
 ]
