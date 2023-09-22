@@ -1,15 +1,10 @@
-Lunches
 venv/
-__pycache__/
-env
-__pycache__/
 db.sqlite3
-venv/
-
-.env/
 */migrations/*
-
-<<<<<<< HEAD
-.vscode/
-
-.vscode/
+.env
+env
+denv/
+__pycache__/**
+denv
+__pycache__/
+*.pyc

@@ -72,7 +72,7 @@ class UserSerializer(serializers.ModelSerializer):
 class RegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['first_name', 'last_name', 'username', 'email', 'password',]
+        fields = ['first_name', 'last_name', 'phone_number','otp','email', 'password',]
         extra_kwargs = {'password': {'write_only': True}}
 
     def create(self, validated_data):
@@ -81,7 +81,8 @@ class RegisterSerializer(serializers.ModelSerializer):
             email=validated_data['email'],
             last_name=validated_data['last_name'],
             first_name=validated_data['first_name'],
-            username=validated_data['username'],
+            phone_number=validated_data['phone_number'],
+            otp=validated_data['otp'],
             org=org
         )
         user.set_password(validated_data['password'])
@@ -155,3 +156,11 @@ class UserGetSerializer(serializers.ModelSerializer):
             media_url = settings.MEDIA_URL
             return f"{media_url}{obj.profile_picture}"
         return None
+from rest_framework.serializers import ModelSerializer
+from .models import OrganizationLunchWallet
+
+
+class LunchWalletSerializer(ModelSerializer):
+    class Meta:
+        model = OrganizationLunchWallet
+        fields = ('balance',)

@@ -4,8 +4,7 @@ from django.urls import path, include
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('users.urls')),
-    path('', include('transaction.urls')),
-    
+    path('api/v1/transaction', include('transaction.urls')),
     # YOUR PATTERNS
     # path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
     # # Optional UI:

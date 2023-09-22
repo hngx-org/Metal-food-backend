@@ -1,34 +1,19 @@
-from rest_framework import generics
-from rest_framework.views import APIView
+from django.contrib.auth import authenticate
+from rest_framework import generics, status
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated, AllowAny
-from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework.views import APIView
 from rest_framework_simplejwt.exceptions import AuthenticationFailed
-from rest_framework.permissions import AllowAny
 from rest_framework_simplejwt.tokens import RefreshToken
-from rest_framework import serializers, status
-from rest_framework import response
-from django.contrib.auth.hashers import check_password
-from rest_framework import permissions
-from django.db import models
+from rest_framework import status
+from rest_framework import generics
+from .serializers import *
+from .utils import *
+
+from .tokens import create_jwt_pair_for_user
+from .utils import EmailManager, generate_token
 
 # Create your views here.
-from rest_framework import generics
-from rest_framework import permissions
-from .models import Users, Organization
-from .serializers import UsersSerializer
-
-from django.contrib.auth import authenticate
-from .utils import response, abort, BaseResponse
-from .models import OrganizationInvites, Users
-from rest_framework.exceptions import AuthenticationFailed
-from .utils import response, abort, BaseResponse, generate_token, EmailManager
-from .serializers import (GetOrganizationSerializer, LoginSerializer,
-                          InviteSerializer, RegisterSerializer, UserProfileSerializer, UserGetSerializer)
-from .tokens import create_jwt_pair_for_user
-
-
-# User = get_user_model()
 
 class OrganizationCreateAPIView(generics.CreateAPIView):
     serializer_class = GetOrganizationSerializer
@@ -38,32 +23,40 @@ class OrganizationCreateAPIView(generics.CreateAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         org = serializer.save()
-        print(org.__dict__)
+        data = {
+            'id':org.id,
+            'name':org.name,
+            'email':org.email,
+            'lunch_price':org.lunch_price,
+            'currency':org.currency,
+            'created_at':org.created_at,
+            'password':org.password
+        }
         res = {
             "message": "Organization created successfully!",
             "code":201,
-            "data":serializer.data
+            "data":data
         }
         return Response(data=res, status=status.HTTP_201_CREATED)
 
+
 class CreateInviteView(generics.CreateAPIView):
     serializer_class = InviteSerializer
-    # queryset = OrganizationInvites
     permission_classes = [AllowAny]
-
 
     def create(self, request):
         token = generate_token()
-        email = request.data.get('email')
         serializer = self.get_serializer(data=request.data, context={'token':token})
         serializer.is_valid(raise_exception=True)
         invite = serializer.save()
+
         EmailManager.send_mail(
-                        subject=f"Your invite token is {invite.token}.",
-                        recipients=[email],
-                        template_name="user_invite.html",
-                        context={'organization':invite, 'token':token}
-                    )
+            subject=f"Free Lunch Invite.",
+            recipients=[invite.email],
+            template_name="user_invite.html",
+            context={"organization":invite.org_id, 'token':invite.token}
+        )
+
         data = {
             'reciepient_email': invite.email,
             'token': invite.token,
@@ -71,11 +64,12 @@ class CreateInviteView(generics.CreateAPIView):
         }
         res = {
             "message": "Invite sent!",
-            "code":201,
+            "code":200,
             "data":data
         }
         return Response(data=res, status=status.HTTP_201_CREATED)
-    
+
+
 
 
 
@@ -113,107 +107,83 @@ class RegisterUserView(generics.CreateAPIView):
 
 class LoginView(APIView):
     """
-     handles both organizatio and user
+     handles both organization and user
      login requests
     """
-    
     def post(self, request):
+        permission_classes = [IsAuthenticated]
         login_serializer = LoginSerializer(data=request.data)
+
+        # checks if serializer data is valid
         
         if login_serializer.is_valid(raise_exception=True):
             email = request.data.get('email')
             password = request.data.get('password')
-
-            if not email or not password:
-                raise AuthenticationFailed('Both email and password is required')
+            
+            if not email or password:
+                raise AuthenticationFailed("Both emil and password is required")
 
             user = authenticate(email=email, password=password)
             if user is not None:
                 if user.is_active:
-                    tokens=create_jwt_pair_for_user(user)
+                    tokens = create_jwt_pair_for_user(user)
                     return Response({
                         "message": "User authenticated successfully",
                         "status": 200,
                         "id": user.id,
-                        "tokens": tokens
+                        "token": tokens
                     })
-                else:
-                    raise AuthenticationFailed("User Is not active")
-            raise AuthenticationFailed("Invalid Email o password")
+
 
 class LogoutView(APIView):
+    """
+        Handle user logout request
+    """
     def post(self, request):
         refresh_token = request.data.get('refresh_token')
         
         if refresh_token:
-            # Blacklist the refresh token
             try:
                 RefreshToken(token=refresh_token).blacklist()
-                return Response({"message": "Logout successful"},
-                                status=status.HTTP_200_OK)
+                return Response({"message": "Logout successfully"},
+                                status=status.HTTP_20O_OK
+                                )
             except Exception as e:
-                return response({"error": str(e)},
+                return Response({"error": str(e)},
                                 status=status.HTTP_400_BAD_REQUEST)
-                
+        
         else:
-            return Response({'error': 'Refresh token is required'}, status=status.HTTP_400_BAD_REQUEST)
+            Response({"error": "Refresh token is required"},
+                            status=status.HTTP_400_BAD_REQUEST
+                            )
 
-class UsersListView(generics.ListAPIView):
-    serializer_class = UsersSerializer
-    permission_classes = [permissions.IsAuthenticated]
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from .serializers import LunchWalletSerializer
+from .models import OrganizationLunchWallet
 
-    def get_queryset(self):
-        org_id = self.kwargs.get('org_id')
-        queryset = Users.objects.filter(org_id=org_id)
-        return queryset
-    
-    def get(self, request, *args, **kwargs):
-        queryset = self.get_queryset()
-        serializers = self.get_serializer(queryset, many=True)
-        response = {
-            "message": "User found",
-            "statusCode": status.HTTP_200_OK,
-            "data": serializers.data
-        }
-        return Response(response, status=status.HTTP_200_OK)
-    
-class UserRetrieveView(generics.RetrieveAPIView):
-    serializer_class = UserProfileSerializer
-    permission_classes = [IsAuthenticated]
-    queryset = Users.objects.all()
+class UpdateOrganizationLunchWallet(APIView):
 
-    def retrieve(self, request, *args, **kwargs):
-        instance = self.get_object()
-        serializers = self.get_serializer(instance)
-        response = {
-            "message": "User data fetched successfully",
-            "statusCode": status.HTTP_200_OK,
-            "data": serializers.data
-        }
-        return Response(response, status=status.HTTP_200_OK)
+    """
+    Title: Update Organization launch wallet balance
+    Description: Description: Allows an admin user to update wallet balance.
 
+    Endpoint: /api/<id>/organization/wallet/update
+    Method:PATCH
+    """
+    queryset = OrganizationLunchWallet.objects.all()
 
-class UserSearchView(generics.ListAPIView):
-    serializer_class = UserGetSerializer
-    queryset = Users.objects.all()
-    # lookup_field = "nameoremail"
-    
-    def get_queryset(self):
-        name_or_email = self.kwargs.get("nameoremail")
-        queryset = Users.objects.filter(
-            models.Q(first_name__icontains=name_or_email) |
-            models.Q(last_name__icontains=name_or_email) |
-            models.Q(email__icontains=name_or_email)
-        )
-        return queryset
-    
-    def get(self, request, *args, **kwargs):
-        queryset = self.get_queryset()
-        serializers = self.get_serializer(queryset, many=True)
-        response = {
-            "message": "User found",
-            "statusCode": status.HTTP_200_OK,
-            "data": serializers.data
-        }
-        return Response(response, status=status.HTTP_200_OK)
-
+    def patch(self, request, org_id):
+        wallet = OrganizationLunchWallet.objects.get(org_id=org_id)
+        serializer = LunchWalletSerializer(wallet, request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({
+                "message": "success",
+                "status": 200,
+                "data": serializer.data
+            })
+        return Response({
+            "message": "error",
+            "error": serializer.errors
+        })
