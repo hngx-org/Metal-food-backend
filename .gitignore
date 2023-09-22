@@ -1,5 +1,10 @@
 venv/
 db.sqlite3
 */migrations/*
-profile_image/
+.env
+env
+denv/
+__pycache__/**
+denv
 __pycache__/
+*.pyc

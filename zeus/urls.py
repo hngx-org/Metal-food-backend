@@ -19,7 +19,7 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('users.urls')),
+    path('api/', include('users.urls')),
     path('', include('transaction.urls')),
     # YOUR PATTERNS
     # path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
