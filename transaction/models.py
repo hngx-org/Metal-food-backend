@@ -4,10 +4,15 @@ from users.models import Users
 
 # Create your models here.
 
+
 class Lunch(models.Model):
     id = models.BigAutoField(primary_key=True)
-    sender_id = models.ForeignKey(Users, on_delete=models.CASCADE, null=False, related_name='lunch_sender')
-    reciever_id = models.ForeignKey(Users, on_delete=models.CASCADE, null=False, related_name='lunch_reciever')
+    sender_id = models.ForeignKey(
+        Users, on_delete=models.CASCADE, null=False, related_name="lunch_sender"
+    )
+    reciever_id = models.ForeignKey(
+        Users, on_delete=models.CASCADE, null=False, related_name="lunch_reciever"
+    )
     quantity = models.IntegerField()
     redeemed = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -16,10 +21,11 @@ class Lunch(models.Model):
     def __str__(self) -> str:
         return str(self.id)
 
+
 class Withdrawals(models.Model):
     id = models.BigAutoField(primary_key=True)
-    user_id = models.ForeignKey(Users, on_delete=models.CASCADE, related_name='id_user')
-    status= models.CharField(max_length=30)
+    user_id = models.ForeignKey(Users, on_delete=models.CASCADE)
+    status = models.CharField(max_length=30)
     amount = models.DecimalField(default=0.00, max_digits=10, decimal_places=2)
     created_at = models.DateTimeField(auto_now_add=True)
 
