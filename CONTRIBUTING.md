@@ -81,5 +81,4 @@ git push -u origin <Your-branch>
 ## 11. Submit your changes for review
 
 Go to the project repo on GitHub, Click on the `Compare & pull request` button.
-THIS TIME, PLEASE COMPARE AND SEND PR TO NEW_DEFAULT BRANCH, ONCE PR IS SENT, PLEASE STANDBY AND WAIT FOR REVIEW. DON'T MERGE YOURSELF.You will get a notification email once the changes have been merged.
- THANKS...
+THIS TIME, PLEASE COMPARE AND SEND PR TO NEW_DEFAULT BRANCH, ONCE PR IS SENT, PLEASE STANDBY AND WAIT FOR REVIEW. DON'T MERGE YOURSELF.YOU WILL GET A NOTIFICATION EMAIL ONCE THE CHANGES HAVE BEEN MERGED. THANKS...
