@@ -1,14 +1,16 @@
-from rest_framework import generics, status
-from rest_framework.authentication import TokenAuthentication, BasicAuthentication, SessionAuthentication
-from rest_framework.permissions import IsAuthenticated
+from rest_framework import generics
+from rest_framework import status
+from rest_framework.views import APIView
 from rest_framework.response import Response
-
-from .models import Lunch, Withdrawals
-from .serializers import LunchSerializer, WithdrawalCountSerializer
+from rest_framework.permissions import IsAuthenticated,AllowAny
+from .models import Withdrawals,Lunch
+from .serializers import LunchSerializers,WithdrawalCountSerializer,LaunchSerializerPost,RedeemSerialize
+from rest_framework.authentication import TokenAuthentication, BasicAuthentication, SessionAuthentication
+from users.models import Users
 
 
 class ListLunchHistory(generics.ListAPIView):
-    serializer_class = LunchSerializer
+    serializer_class = LunchSerializers
     permission_classes = [IsAuthenticated,]
     authentication_classes = [TokenAuthentication, BasicAuthentication, SessionAuthentication]
 
@@ -34,3 +36,35 @@ class WithdrawalCountView(generics.RetrieveAPIView):
         })
 
         return Response(serializer.data, status=status.HTTP_200_OK)
+class SendLunchView(generics.CreateAPIView):
+    serializer_class = LaunchSerializerPost
+    authentication_classes = [TokenAuthentication, BasicAuthentication, SessionAuthentication]
+    queryset = Lunch.objects.all()
+    permission_classes = [IsAuthenticated]
+    def create(self, request, *args, **kwargs):
+        serializer=self.get_serializer(data=request.data,context={'senderId':Users.objects.get(id=request.user.id)})
+        print(request.user.id)
+        if serializer.is_valid():
+            senderId = Users.objects.get(id=request.user.id)
+            note = serializer.validated_data.get('note')
+            quantity=serializer.validated_data.get('quantity')
+            for receiver_Id in serializer.validated_data.get('receivers'):
+                Lunch.objects.create(sender_id=senderId, reciever_id=receiver_Id, quantity=quantity, note=note)
+            return Response({ "message": "Lunch request created successfully","data": {}}, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+class RedeemLunchView(APIView):
+    authentication_classes = [TokenAuthentication, BasicAuthentication, SessionAuthentication]
+    permission_classes = [IsAuthenticated]
+    def post(self, request, *args, **kwargs):
+        serializer = RedeemSerialize(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            for lunchId in serializer.validated_data.get('id'):
+                lunch=Lunch.objects.get(id=lunchId)
+                lunch_credit=lunch.quantity
+                lunch.redeemed=True
+                receiver = Users.objects.get(first_name=lunch.reciever_id.first_name)
+                receiver.lunch_credit_balance +=lunch_credit
+                lunch.save()
+                receiver.save()
+            return Response({ "message": "success",  "statusCode": 200,"data": "null"})
