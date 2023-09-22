@@ -96,14 +96,25 @@ WSGI_APPLICATION = 'zeus.wsgi.application'
 #     }
 # }
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': 'free_lunch_test_db',
+#         'USER': 'metal',
+#         'PASSWORD': 'Metal100%',
+#         'HOST': '35.193.20.212',  # Or the hostname where your MySQL server is running
+#         'PORT': '3306',       # MySQL's default port is 3306
+#     }
+# }
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'free_lunch_test_db',
-        'USER': 'metal',
-        'PASSWORD': 'Metal100%',
-        'HOST': '35.193.20.212',  # Or the hostname where your MySQL server is running
-        'PORT': '3306',       # MySQL's default port is 3306
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'team_metal_db',
+        'USER': 'team_metal_user',
+        'PASSWORD': 'SYW9oco2st70Mn6RYcRdrthmt6B3QnLo',
+        'HOST': 'http://dpg-ck6t8avsasqs73djrtp0-a.oregon-postgres.render.com/',  # Set to the PostgreSQL server host
+        'PORT': '5432',       # Set to the PostgreSQL server port
     }
 }
 
@@ -185,7 +196,6 @@ SIMPLE_JWT = {
 PASSWORD_HASHERS = [
     'django.contrib.auth.hashers.BCryptSHA256PasswordHasher',
 ]
-
 
     
 
