@@ -228,8 +228,8 @@ class UserRetrieveView(generics.RetrieveAPIView):
     queryset = User.objects.all()
     
     def get(self, request, *args, **kwargs):
-        queryset = self.get_object()
-        serializer = self.get_serializer(queryset)
+        current_user = request.user
+        serializer = self.get_serializer(current_user)
         response = {
             "message": "User data fetched successfully",
             "statusCode": status.HTTP_200_OK,

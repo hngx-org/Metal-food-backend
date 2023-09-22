@@ -21,5 +21,5 @@ urlpatterns = [
         
     path('user/all', ListUsersView.as_view(), name='list-users'),
     path('user/search/<str:nameoremail>/', SearchUserView.as_view(), name='search-user'),
-    path('user/profile/<int:pk>/', UserRetrieveView.as_view(), name="retrieve-user"),
+    path('user/profile/', UserRetrieveView.as_view(), name="retrieve-user"),
 ]
