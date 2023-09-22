@@ -125,6 +125,9 @@ class WithdrawalRequestCreateView(generics.CreateAPIView):
             withdrawal_request = Withdrawals.objects.create(
                 amount=serializer.validated_data["amount"], user_id=request.user
             )
+            user = Users.object.get(id = request.user.id)
+            user.lunch_credit_balance -= serializer.validated_data["amount"]
+            user.save()
 
             withdrawal_request.status = "success"
             withdrawal_request.save()
@@ -134,7 +137,7 @@ class WithdrawalRequestCreateView(generics.CreateAPIView):
                 "statusCode": status.HTTP_201_CREATED,
                 "data": {
                     "id": withdrawal_request.id,
-                    "user_id": withdrawal_request.user_id,
+                    "user_id": withdrawal_request.user_id.id,
                     "status": withdrawal_request.status,
                     "amount": withdrawal_request.amount,
                     "created_at": withdrawal_request.created_at.isoformat(),
