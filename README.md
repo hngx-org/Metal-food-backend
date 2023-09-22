@@ -21,23 +21,23 @@ Content-Type: application/json
    {
     "id": 1,
     "user_id": 2345,
-    "status": Success,
+    "status": "Success",
     "amount": 200.99,
-    "created_at": 2023-09-10T15:45:30.123456
+    "created_at": "2023-09-10T15:45:30.123456"
     },
    {
     "id": 2,
     "user_id": 2345,
-    "status": Success,
+    "status": "Success",
     "amount": 400.99,
-    "created_at": 2023-09-15T15:45:30.123456
+    "created_at": "2023-09-15T15:45:30.123456"
     },
    {
     "id": 3,
     "user_id": 2345,
-    "status": Success,
+    "status": "Success",
     "amount": 600.99,
-    "created_at": 2023-09-19T15:45:30.123456
+    "created_at": "023-09-19T15:45:30.123456"
     },
 
 ```
@@ -57,9 +57,9 @@ Content-Type: application/json
    {
     "id": 1,
     "user_id": 2345,
-    "status": Success,
+    "status": "Success",
     "amount": 200.99,
-    "created_at": 2023-09-10T15:45:30.123456
+    "created_at": "2023-09-10T15:45:30.123456"
     },
 
 ```
