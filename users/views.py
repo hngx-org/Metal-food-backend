@@ -95,7 +95,7 @@ class RegisterUserView(generics.CreateAPIView):
     """
 
     authentication_classes = ()
-    permission_classes = ()
+    permission_classes = [AllowAny]
     serializer_class = RegisterSerializer
 
     def create(self, request, *args, **kwargs):
@@ -108,6 +108,7 @@ class RegisterUserView(generics.CreateAPIView):
             serializer = RegisterSerializer(data=request.data, context={"org": org})
             serializer.is_valid(raise_exception=True)
             user = serializer.save()
+            user.is_active = True
 
             response_data = {
                 "first_name": user.first_name,
@@ -142,8 +143,8 @@ class LoginView(APIView):
             email = request.data.get("email")
             password = request.data.get("password")
 
-            if not email or password:
-                raise AuthenticationFailed("Both emil and password is required")
+            # if not email or password:
+            #     raise AuthenticationFailed("Both emil and password is required")
 
             user = authenticate(email=email, password=password)
             if user is not None:
