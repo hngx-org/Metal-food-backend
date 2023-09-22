@@ -6,4 +6,4 @@ db.sqlite3
 env
 denv/
 __pycache__/**
-
+denv
