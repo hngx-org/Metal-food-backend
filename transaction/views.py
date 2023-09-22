@@ -51,7 +51,7 @@ class WithdrawalRequestListView(generics.ListAPIView):
         
         if user is not None:
             try:
-                user = Users.objects.get(id=user.id)
+                user_id = Users.objects.get(id=user.id)
             except Users.DoesNotExist():
                 response = {
                     "message": "User not found",
@@ -87,7 +87,7 @@ class WithdrawalRequestRetrieveView(generics.ListAPIView):
         if user is not None:
 
             try:
-                user = Users.objects.get(id=user.id)
+                user_id = Users.objects.get(id=user.id)
             except Users.DoesNotExist():
                 response = {
                     "message": "User not found",
