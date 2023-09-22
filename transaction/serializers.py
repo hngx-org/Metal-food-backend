@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from .models import Lunch
 from users.models import Users
+from django.shortcuts import get_object_or_404
 
 class LunchSerializers(serializers.ModelSerializer):
     class Meta:
@@ -40,7 +41,7 @@ class RedeemSerialize(serializers.Serializer):
     def validate(self, data):
         print(data['id'])
         for lunch_id in data['id']:
-            lunch = Lunch.objects.filter(id=lunch_id).first()
+            lunch=get_object_or_404(Lunch, id=lunch_id)
             print(lunch_id)
             if lunch.redeemed == True :
                 raise serializers.ValidationError('Lunch already redeemed')

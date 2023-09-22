@@ -7,7 +7,7 @@ from .models import Withdrawals,Lunch
 from .serializers import LunchSerializers,WithdrawalCountSerializer,LaunchSerializerPost,RedeemSerialize
 from rest_framework.authentication import TokenAuthentication, BasicAuthentication, SessionAuthentication
 from users.models import Users
-
+from django.shortcuts import get_object_or_404
 
 class ListLunchHistory(generics.ListAPIView):
     serializer_class = LunchSerializers
@@ -63,7 +63,7 @@ class RedeemLunchView(APIView):
                 lunch=Lunch.objects.get(id=lunchId)
                 lunch_credit=lunch.quantity
                 lunch.redeemed=True
-                receiver = Users.objects.get(first_name=lunch.reciever_id.first_name)
+                receiver=get_object_or_404(Users,first_name=lunch.reciever_id.first_name)
                 receiver.lunch_credit_balance +=lunch_credit
                 lunch.save()
                 receiver.save()
