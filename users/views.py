@@ -185,7 +185,6 @@ class LogoutView(APIView):
 
 
 
-
 class UpdateOrganizationLunchWallet(APIView):
 
     """
