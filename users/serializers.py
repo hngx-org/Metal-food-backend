@@ -120,12 +120,11 @@ class UsersSerializer(serializers.ModelSerializer):
 class UserProfileSerializer(serializers.ModelSerializer):
     name = serializers.SerializerMethodField()
     profile_picture = serializers.SerializerMethodField()
-    phonenumber = serializers.CharField(source='phone_number')
     isAdmin = serializers.BooleanField(source="is_staff")
     
     class Meta:
         model = User
-        fields = ["name", "email", "profile_picture", "phonenumber", "bank_number", "bank_code", "bank_name", "isAdmin"]
+        fields = ["id", "name", "email", "profile_picture", "isAdmin"]
         
     def get_name(self, obj):
         """Joins first_name and last_name to get name"""
