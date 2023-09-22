@@ -17,7 +17,7 @@ class ListLunchHistory(generics.ListAPIView):
     def get_queryset(self):
         user = self.request.user 
         query_set = Lunch.objects.filter(sender_id=user) | Lunch.objects.filter(receiver_id=user)
-        return Response({'Lunch History': query_set}, status.HTTP_200_OK)  
+        return query_set 
 
 
         """
@@ -99,3 +99,13 @@ class WithdrawalRequestCreateView(generics.CreateAPIView):
             }
 
             return Response(response_data, status=status.HTTP_201_CREATED)
+
+
+class ListAllLunches(generics.ListAPIView):
+    serializer_class = LunchSerializers
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [TokenAuthentication, BasicAuthentication, SessionAuthentication]
+
+    def get_queryset(self):
+        queryset = Lunch.objects.all()
+        return queryset

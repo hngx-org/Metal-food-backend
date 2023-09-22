@@ -13,7 +13,13 @@ from .utils import *
 from .tokens import create_jwt_pair_for_user
 from .utils import EmailManager, generate_token
 
-# Create your views here.
+from django.db.models import Q
+from django.shortcuts import get_object_or_404
+from .models import Users
+from rest_framework.views import APIView
+from .models import OrganizationLunchWallet
+from rest_framework.response import Response
+from .serializers import LunchWalletSerializer
 
 class OrganizationCreateAPIView(generics.CreateAPIView):
     serializer_class = GetOrganizationSerializer
@@ -110,6 +116,8 @@ class LoginView(APIView):
      handles both organization and user
      login requests
     """
+    permission_classes = [AllowAny]
+    
     def post(self, request):
         permission_classes = [AllowAny]
         login_serializer = LoginSerializer(data=request.data)
@@ -157,10 +165,6 @@ class LogoutView(APIView):
                             status=status.HTTP_400_BAD_REQUEST
                             )
 
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from .serializers import LunchWalletSerializer
-from .models import OrganizationLunchWallet
 
 class UpdateOrganizationLunchWallet(APIView):
 
@@ -187,3 +191,49 @@ class UpdateOrganizationLunchWallet(APIView):
             "message": "error",
             "error": serializer.errors
         })
+        
+
+class ListUsersView(generics.ListAPIView):
+    queryset = Users.objects.all()
+    serializer_class = AllUserSerializer
+    permission_classes = [IsAuthenticated]
+
+class SearchUserView(generics.RetrieveAPIView):
+    serializer_class = AllUserSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        nameoremail = self.kwargs.get('nameoremail')  # Get the nameoremail parameter from the URL
+        # Perform a case-insensitive search on first_name, last_name, and email
+        queryset = Users.objects.filter(
+            Q(first_name__icontains=nameoremail) |
+            Q(last_name__icontains=nameoremail) |
+            Q(email__icontains=nameoremail)
+        )
+        return queryset
+
+    def retrieve(self, request, nameoremail):
+        queryset = self.get_queryset()
+        user = get_object_or_404(queryset)
+        serializer = AllUserSerializer(user)
+        return Response({
+            "message": "User found",
+            "statusCode": status.HTTP_200_OK,
+            "data": serializer.data
+        })
+
+
+class UserRetrieveView(generics.RetrieveAPIView):
+    serializer_class = UserProfileSerializer
+    permission_classes = [IsAuthenticated]
+    queryset = User.objects.all()
+    
+    def get(self, request, *args, **kwargs):
+        queryset = self.get_object()
+        serializer = self.get_serializer(queryset)
+        response = {
+            "message": "User data fetched successfully",
+            "statusCode": status.HTTP_200_OK,
+            "data": serializer.data
+        }
+        return Response(response, status=status.HTTP_200_OK)

@@ -117,12 +117,11 @@ class UsersSerializer(serializers.ModelSerializer):
 class UserProfileSerializer(serializers.ModelSerializer):
     name = serializers.SerializerMethodField()
     profile_picture = serializers.SerializerMethodField()
-    phonenumber = serializers.CharField(source='phone_number')
     isAdmin = serializers.BooleanField(source="is_staff")
     
     class Meta:
         model = User
-        fields = ["name", "email", "profile_picture", "phonenumber", "bank_number", "bank_code", "bank_name", "isAdmin"]
+        fields = ["id", "name", "email", "profile_picture", "isAdmin"]
         
     def get_name(self, obj):
         """Joins first_name and last_name to get name"""
@@ -154,10 +153,15 @@ class UserGetSerializer(serializers.ModelSerializer):
             return f"{media_url}{obj.profile_picture}"
         return None
 from rest_framework.serializers import ModelSerializer
-from .models import OrganizationLunchWallet
+from .models import OrganizationLunchWallet, Users
 
 
 class LunchWalletSerializer(ModelSerializer):
     class Meta:
         model = OrganizationLunchWallet
         fields = ('balance',)
+        
+class AllUserSerializer(ModelSerializer):
+    class Meta:
+        model = Users
+        fields = ('id', 'first_name', 'last_name', 'email', 'profile_picture')
