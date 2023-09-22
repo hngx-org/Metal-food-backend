@@ -14,5 +14,8 @@ urlpatterns = [
     path('auth/logout', LogoutView.as_view(), name='logout'),
     
     path('organization/create', OrganizationCreateAPIView.as_view(), name='create-organization'),
-    path('organization/invite', CreateInviteView.as_view(), name='token_invite'), 
+    path('organization/invite', CreateInviteView.as_view(), name='token_invite'),
+    
+    path("organization/staff/signup", RegisterUserView.as_view(), name="sign-up")
+
 ]
