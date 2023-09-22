@@ -36,13 +36,12 @@ class LaunchSerializerPost(serializers.Serializer):
             raise serializers.ValidationError("You can't send lunch to yourself")
         else:
             return data
+            
 class RedeemSerialize(serializers.Serializer):
     id=serializers.ListField(child=serializers.IntegerField(),allow_empty=False)
     def validate(self, data):
-        print(data['id'])
         for lunch_id in data['id']:
             lunch=get_object_or_404(Lunch, id=lunch_id)
-            print(lunch_id)
             if lunch.redeemed == True :
                 raise serializers.ValidationError('Lunch already redeemed')
         return data

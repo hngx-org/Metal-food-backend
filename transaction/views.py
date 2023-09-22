@@ -1,5 +1,4 @@
-from rest_framework import generics
-from rest_framework import status
+from rest_framework import status, generics
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated,AllowAny
@@ -19,10 +18,6 @@ class ListLunchHistory(generics.ListAPIView):
         query_set = Lunch.objects.filter(sender_id=user) | Lunch.objects.filter(receiver_id=user)
         return query_set 
 
-
-        """
-        Get the count of withdrawal made by user
-        """
 class WithdrawalCountView(generics.RetrieveAPIView):
     permission_classes = [IsAuthenticated]
 
@@ -42,7 +37,7 @@ class SendLunchView(generics.CreateAPIView):
     permission_classes = [IsAuthenticated]
     def create(self, request, *args, **kwargs):
         serializer=self.get_serializer(data=request.data,context={'senderId':Users.objects.get(id=request.user.id)})
-        print(request.user.id)
+
         if serializer.is_valid():
             senderId = Users.objects.get(id=request.user.id)
             note = serializer.validated_data.get('note')

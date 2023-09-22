@@ -108,7 +108,7 @@ class RegisterUserView(generics.CreateAPIView):
             return Response(base_response.to_dict(), status=status.HTTP_201_CREATED)
 
         except Exception as e:
-            return abort(404, "Email not invited")
+            return Response({'Error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class LoginView(APIView):
