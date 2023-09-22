@@ -111,7 +111,7 @@ class LoginView(APIView):
      login requests
     """
     def post(self, request):
-        permission_classes = [IsAuthenticated]
+        permission_classes = [AllowAny]
         login_serializer = LoginSerializer(data=request.data)
 
         # checks if serializer data is valid
