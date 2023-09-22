@@ -7,17 +7,6 @@ from django.shortcuts import get_object_or_404
 class LunchSerializers(serializers.ModelSerializer):
     class Meta:
         model = Lunch
-<<<<<<< HEAD
-        fields = '__all__'
-class WithdrawalRequestSerializer(serializers.Serializer):
-    amount=serializers.DecimalField(max_digits=10,decimal_places=2)
-    bank_number=serializers.CharField(max_length=20)
-    bank_name=serializers.CharField(max_length=50)
-    bank_code=serializers.CharField(max_length=30)
-=======
-        fields = "__all__"
->>>>>>> a9f90ddee4ce63f73c6db21fc54afe97bb308651
-
 
 class WithdrawalRequestSerializer(serializers.Serializer):
     amount = serializers.DecimalField(max_digits=10, decimal_places=2)
