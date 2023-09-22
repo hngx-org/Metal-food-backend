@@ -1,12 +1,13 @@
 from rest_framework import serializers
-
+from .models import Users, Organization, OrganizationInvites
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from django.contrib.auth import get_user_model
-from .models import Users, Organization, OrganizationInvites
 from zeus import settings
+from rest_framework.serializers import ModelSerializer
+from .models import OrganizationLunchWallet
 
 
 class GetOrganizationSerializer(serializers.ModelSerializer):
@@ -64,15 +65,20 @@ User = get_user_model()
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = Users
-        fields = ['email', 'username', 'password']
-        extra_kwargs = {'password': {'write_only': True}}
+        fields = ['id', 'organization', 'first_name', 'last_name', 'profile_pic', 'email', 'phone',
+                  'is_admin', 'lunch_credit_balance', 'bank_number', 'bank_code', 'bank_name',
+                  'currency', 'currency_code', 'created_at', 'updated_at', 'is_deleted']
 
-
+class BankAccountSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Users
+        fields = ['email', 'bank_number', 'bank_code', 'bank_name']
+        
 
 class RegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['first_name', 'last_name', 'phone_number','otp','email', 'password',]
+        fields = ['first_name', 'last_name', 'username','email', 'password',]
         extra_kwargs = {'password': {'write_only': True}}
 
     def create(self, validated_data):
@@ -80,13 +86,11 @@ class RegisterSerializer(serializers.ModelSerializer):
         user = User(
             email=validated_data['email'],
             last_name=validated_data['last_name'],
-            first_name=validated_data['first_name'],
-            phone_number=validated_data['phone_number'],
-            otp=validated_data['otp'],
+            username=validated_data['username'],
             org=org
         )
         user.set_password(validated_data['password'])
-        user.is_active = False
+        user.is_active = True
         user.save()
         return user
 
@@ -96,9 +100,6 @@ class RegisterSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("This username is already in use.")
         return value
 
-
-
-
 class LoginSerializer(TokenObtainPairSerializer):
     email = serializers.EmailField(required=True)
     password = serializers.CharField(required=True)
@@ -106,10 +107,6 @@ class LoginSerializer(TokenObtainPairSerializer):
         'no_active_account': 'Your account is not active.',
         'invalid_credentials':'Invalid email or password.',
     }
-
-    
-
-
 
 class UsersSerializer(serializers.ModelSerializer):
     class Meta:
@@ -143,7 +140,7 @@ class UserGetSerializer(serializers.ModelSerializer):
     user_id = serializers.CharField(source="id")
     
     class Meta:
-        model = User
+        model = Users
         fields = ["name", "email", "profile_picture", "user_id"]
         
     def get_name(self, obj):
@@ -155,9 +152,6 @@ class UserGetSerializer(serializers.ModelSerializer):
             media_url = settings.MEDIA_URL
             return f"{media_url}{obj.profile_picture}"
         return None
-from rest_framework.serializers import ModelSerializer
-from .models import OrganizationLunchWallet, Users
-
 
 class LunchWalletSerializer(ModelSerializer):
     class Meta:
