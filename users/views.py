@@ -1,26 +1,39 @@
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import generics, status
+from rest_framework import permissions
+from .serializers import *
+from django.db.models import Q
+from django.shortcuts import get_object_or_404
+
+from .models import Users, OrganizationLunchWallet, OrganizationInvites
+
+from django.contrib.auth import authenticate
 from django.contrib.auth import authenticate, get_user_model
 from rest_framework import generics, status
 from rest_framework.permissions import AllowAny, IsAuthenticated
-from rest_framework.response import Response
-from rest_framework.views import APIView
 from rest_framework_simplejwt.exceptions import AuthenticationFailed
 from rest_framework_simplejwt.tokens import RefreshToken
-from .serializers import (
-    LunchWalletSerializer,
-    GetOrganizationSerializer,
-    InviteSerializer,
-    RegisterSerializer,
-    LoginSerializer,
-    AllUserSerializer,
-    UserProfileSerializer,
-)
+from .utils import *
 
 from .tokens import create_jwt_pair_for_user
 from .utils import EmailManager, generate_token, BaseResponse
 
-from django.db.models import Q
-from django.shortcuts import get_object_or_404
-from .models import Users, OrganizationLunchWallet, OrganizationInvites
+class AddBankAccountView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def patch(self, request):
+        user = request.user
+        serializer = BankAccountSerializer(user, data=request.data, partial=True)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response({
+                "message": "Bank account information updated successfully"
+                }, status=status.HTTP_200_OK)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 User = get_user_model()
 
@@ -34,13 +47,13 @@ class OrganizationCreateAPIView(generics.CreateAPIView):
         serializer.is_valid(raise_exception=True)
         org = serializer.save()
         data = {
-            "id": org.id,
-            "name": org.name,
-            "email": org.email,
-            "lunch_price": org.lunch_price,
-            "currency": org.currency,
-            "created_at": org.created_at,
-            "password": org.password,
+            'id':org.id,
+            'name':org.name,
+            'email':org.email,
+            'lunch_price':org.lunch_price,
+            'currency':org.currency,
+            'created_at':org.created_at,
+            # 'password':org.password
         }
         res = {
             "message": "Organization created successfully!",
@@ -82,7 +95,7 @@ class RegisterUserView(generics.CreateAPIView):
     """
 
     authentication_classes = ()
-    permission_classes = ()
+    permission_classes = [AllowAny]
     serializer_class = RegisterSerializer
 
     def create(self, request, *args, **kwargs):
@@ -95,6 +108,7 @@ class RegisterUserView(generics.CreateAPIView):
             serializer = RegisterSerializer(data=request.data, context={"org": org})
             serializer.is_valid(raise_exception=True)
             user = serializer.save()
+            user.is_active = True
 
             response_data = {
                 "first_name": user.first_name,
@@ -121,6 +135,7 @@ class LoginView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request):
+        permission_classes = [AllowAny]
         login_serializer = LoginSerializer(data=request.data)
 
         # checks if serializer data is valid
@@ -129,8 +144,8 @@ class LoginView(APIView):
             email = request.data.get("email")
             password = request.data.get("password")
 
-            if not email or password:
-                raise AuthenticationFailed("Both emil and password is required")
+            # if not email or password:
+            #     raise AuthenticationFailed("Both emil and password is required")
 
             user = authenticate(email=email, password=password)
             if user is not None:
@@ -168,6 +183,7 @@ class LogoutView(APIView):
                 {"error": "Refresh token is required"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
+
 
 
 class UpdateOrganizationLunchWallet(APIView):
