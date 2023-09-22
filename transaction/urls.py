@@ -1,5 +1,5 @@
 from django.urls import path 
-from .views import WithdrawalRequestCreateView, WithdrawalCountView, SendLunchView, RedeemLunchView, ListLunchHistory
+from .views import WithdrawalRequestCreateView, WithdrawalCountView, SendLunchView, RedeemLunchView, ListLunchHistory, ListAllLunches
 from . import views
 
 urlpatterns = [
@@ -8,4 +8,5 @@ urlpatterns = [
    path('api/lunch/history',ListLunchHistory.as_view(), name='list-lunch-history' ),
    path('api/lunch/send',SendLunchView.as_view(),name='send-lunch'),
    path('api/lunch/redeem',RedeemLunchView.as_view(),name='redeem-lunch'),
+   path('api/lunch/all', ListAllLunches.as_view(), name='list-all-lunches'),
 ]
