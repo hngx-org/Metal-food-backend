@@ -73,20 +73,19 @@ class BankAccountSerializer(serializers.ModelSerializer):
     class Meta:
         model = Users
         fields = ['bank_number', 'bank_code', 'bank_name']
-        fields = ['email', 'username', 'password']
-        extra_kwargs = {'password': {'write_only': True}}
+        
 
 
 
 class RegisterSerializer(serializers.ModelSerializer):
     class Meta:
-        model = User
+        model = Users
         fields = ['first_name', 'last_name', 'phone_number','otp','email', 'password',]
         extra_kwargs = {'password': {'write_only': True}}
 
     def create(self, validated_data):
         org = self.context.get('org')
-        user = User(
+        user = Users(
             email=validated_data['email'],
             last_name=validated_data['last_name'],
             first_name=validated_data['first_name'],
@@ -101,7 +100,7 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     def validate_username(self, value):
         # Check if a user with this username already exists
-        if User.objects.filter(username=value).exists():
+        if Users.objects.filter(username=value).exists():
             raise serializers.ValidationError("This username is already in use.")
         return value
 
@@ -126,7 +125,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
     isAdmin = serializers.BooleanField(source="is_staff")
     
     class Meta:
-        model = User
+        model = Users
         fields = ["name", "email", "profile_picture", "phonenumber", "bank_number", "bank_code", "bank_name", "isAdmin"]
         
     def get_name(self, obj):
@@ -146,7 +145,7 @@ class UserGetSerializer(serializers.ModelSerializer):
     user_id = serializers.CharField(source="id")
     
     class Meta:
-        model = User
+        model = Users
         fields = ["name", "email", "profile_picture", "user_id"]
         
     def get_name(self, obj):

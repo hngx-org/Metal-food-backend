@@ -42,7 +42,6 @@ class Organization(AbstractBaseUser, PermissionsMixin):
         return self.name
 
 
-
 class Users(AbstractBaseUser, PermissionsMixin):
     org = models.ForeignKey(Organization, on_delete=models.CASCADE, null=True)
     first_name = models.CharField(max_length=255)

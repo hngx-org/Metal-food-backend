@@ -1,8 +1,20 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import status
+from rest_framework import generics, status
 from rest_framework import permissions
-from .serializers import BankAccountSerializer
+from .serializers import *
+
+from .models import OrganizationLunchWallet
+
+from django.contrib.auth import authenticate
+from rest_framework import generics, status
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework_simplejwt.exceptions import AuthenticationFailed
+from rest_framework_simplejwt.tokens import RefreshToken
+from .utils import *
+
+from .tokens import create_jwt_pair_for_user
+from .utils import EmailManager, generate_token
 
 class AddBankAccountView(APIView):
     permission_classes = [permissions.IsAuthenticated]
@@ -18,20 +30,6 @@ class AddBankAccountView(APIView):
                 }, status=status.HTTP_200_OK)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-from django.contrib.auth import authenticate
-from rest_framework import generics, status
-from rest_framework.permissions import AllowAny, IsAuthenticated
-from rest_framework.response import Response
-from rest_framework.views import APIView
-from rest_framework_simplejwt.exceptions import AuthenticationFailed
-from rest_framework_simplejwt.tokens import RefreshToken
-from rest_framework import status
-from rest_framework import generics
-from .serializers import *
-from .utils import *
-
-from .tokens import create_jwt_pair_for_user
-from .utils import EmailManager, generate_token
 
 # Create your views here.
 
@@ -177,10 +175,7 @@ class LogoutView(APIView):
                             status=status.HTTP_400_BAD_REQUEST
                             )
 
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from .serializers import LunchWalletSerializer
-from .models import OrganizationLunchWallet
+
 
 class UpdateOrganizationLunchWallet(APIView):
 
