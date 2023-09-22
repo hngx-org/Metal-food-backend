@@ -1,4 +1,4 @@
-from rest_framework import generic
+from rest_framework import generics
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
@@ -85,11 +85,11 @@ from rest_framework.authentication import TokenAuthentication, BasicAuthenticati
 from rest_framework.permissions import IsAuthenticated
 
 from .models import Lunch
-from .serializers import LunchSerializer
+from .serializers import LunchSerializers
 
 
 class ListLunchHistory(generics.ListAPIView):
-    serializer_class = LunchSerializer
+    serializer_class = LunchSerializers
     permission_classes = [IsAuthenticated,]
     authentication_classes = [TokenAuthentication, BasicAuthentication, SessionAuthentication]
 
