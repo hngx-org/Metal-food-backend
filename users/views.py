@@ -28,10 +28,17 @@ class AddBankAccountView(APIView):
 
         if serializer.is_valid():
             serializer.save()
-            return Response({
-                "message": "Bank account information updated successfully"
-                }, status=status.HTTP_200_OK)
-
+            user_data = {
+                "email": user.email,  
+                "bank_number": user.bank_number,  
+                "bank_code": user.bank_code,
+                "bank_name": user.bank_name,
+            }
+            return Response({ 
+                "data": user_data,
+                "message": "Bank account information updated successfully",
+                "code": 200, 
+            }, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
