@@ -11,6 +11,8 @@ from .models import Users, OrganizationLunchWallet, OrganizationInvites
 from django.contrib.auth import authenticate
 from django.contrib.auth import authenticate, get_user_model
 from rest_framework import generics, status
+from django.contrib.auth import get_user_model
+from rest_framework import generics, status, views
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework_simplejwt.exceptions import AuthenticationFailed
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -18,6 +20,10 @@ from .utils import *
 
 from .tokens import create_jwt_pair_for_user
 from .utils import EmailManager, generate_token, BaseResponse
+from .backends import CustomUserBackend
+
+from django.db.models import Q
+from django.shortcuts import get_object_or_404
 
 class AddBankAccountView(APIView):
     permission_classes = [permissions.IsAuthenticated]
@@ -43,14 +49,15 @@ class AddBankAccountView(APIView):
 
 
 User = get_user_model()
+authenticate = CustomUserBackend.authenticate
 
 
-class OrganizationCreateAPIView(generics.CreateAPIView):
+class OrganizationCreateAPIView(views.APIView):
     serializer_class = GetOrganizationSerializer
     permission_classes = [AllowAny]
 
-    def create(self, request):
-        serializer = self.get_serializer(data=request.data)
+    def post(self, request):
+        serializer = GetOrganizationSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         org = serializer.save()
         data = {
