@@ -199,7 +199,11 @@ class UpdateOrganizationLunchWallet(APIView):
     queryset = OrganizationLunchWallet.objects.all()
 
     def patch(self, request, org_id):
-        wallet = OrganizationLunchWallet.objects.get(org_id=org_id)
+        try:
+            wallet = OrganizationLunchWallet.objects.get(org_id=org_id)
+        except OrganizationLunchWallet.DoesNotExist:
+            return Response({"message": "OrganizationLunchWallet not found", "status": status.HTTP_404_NOT_FOUND}, status=status.HTTP_404_NOT_FOUND)
+
         serializer = LunchWalletSerializer(wallet, request.data)
         if serializer.is_valid():
             serializer.save()
