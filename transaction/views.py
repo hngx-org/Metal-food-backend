@@ -14,7 +14,6 @@ class ListLunchHistory(generics.ListAPIView):
     permission_classes = [IsAuthenticated,]
     authentication_classes = [TokenAuthentication, BasicAuthentication, SessionAuthentication]
 
-
     def get_queryset(self):
         user = self.request.user 
         query_set = Lunch.objects.filter(sender_id=user) | Lunch.objects.filter(receiver_id=user)
