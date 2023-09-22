@@ -142,3 +142,13 @@ class WithdrawalRequestCreateView(generics.CreateAPIView):
             }
 
             return Response(response_data, status=status.HTTP_201_CREATED)
+
+
+class ListAllLunches(generics.ListAPIView):
+    serializer_class = LunchSerializers
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [TokenAuthentication, BasicAuthentication, SessionAuthentication]
+
+    def get_queryset(self):
+        queryset = Lunch.objects.all()
+        return queryset
