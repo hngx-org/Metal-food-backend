@@ -33,14 +33,6 @@ class AddBankAccountView(APIView):
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-# Create your views here.
-
-# from .models import Users
-# from rest_framework.views import APIView
-# from .models import OrganizationLunchWallet
-# from rest_framework.response import Response
-# from .serializers import LunchWalletSerializer
-
 class OrganizationCreateAPIView(generics.CreateAPIView):
     serializer_class = GetOrganizationSerializer
     permission_classes = [AllowAny]
