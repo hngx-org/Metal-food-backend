@@ -46,7 +46,7 @@ Content-Type: application/json
 **Request:**
 
 ```http
-GET api/withdrawal/get/1
+GET /api/withdrawal/get/1
 Content-Type: application/json
 
 ```
