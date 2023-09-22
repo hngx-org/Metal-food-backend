@@ -126,6 +126,10 @@ class RegisterUserView(generics.CreateAPIView):
             return Response({"Error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
+# class RegisterOrganisationView(generics.CreateAPIView):
+    
+
+
 class LoginView(APIView):
     """
     handles both organization and user
@@ -163,26 +167,21 @@ class LoginView(APIView):
 
 class LogoutView(APIView):
     """
-    Handle user logout request
+    View to logout a user
     """
+    permission_classes = (IsAuthenticated,)
 
     def post(self, request):
-        refresh_token = request.data.get("refresh_token")
-
-        if refresh_token:
-            try:
-                RefreshToken(token=refresh_token).blacklist()
-                return Response(
-                    {"message": "Logout successfully"}, status=status.HTTP_20O_OK
-                )
-            except Exception as e:
-                return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
-
-        else:
-            Response(
-                {"error": "Refresh token is required"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+        try:
+            refresh_token = request.data.get("refresh_token")
+           
+            token = RefreshToken(refresh_token)
+            token.blacklist()
+            base_response = BaseResponse(None, None, 'Successfully logged out.')
+            return Response(base_response.to_dict(), status=status.HTTP_200_OK)
+        except Exception as e:
+            print(type(str(e)))
+            return abort(400, str(e))
 
 
 
