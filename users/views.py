@@ -36,7 +36,7 @@ class OrganizationCreateAPIView(generics.CreateAPIView):
             'lunch_price':org.lunch_price,
             'currency':org.currency,
             'created_at':org.created_at,
-            'password':org.password
+            # 'password':org.password
         }
         res = {
             "message": "Organization created successfully!",
