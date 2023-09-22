@@ -46,19 +46,18 @@ class WithdrawalRequestListView(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
     
     def get(self, request, *args, **kwargs):
-        #change the request.user to request.GET.get("user_id", None)
+        
         user = request.user
         
         if user is not None:
-            #add this when authentication is complete
-            # try:
-            #     user = Users.objects.get(id=user_id)
-            # except Users.DoesNotExist():
-            #     response = {
-            #         "message": "User not found",
-            #         "statusCode": status.HTTP_404_NOT_FOUND,
-            #     }
-            #     return Response(response, status=status.HTTP_404_NOT_FOUND)
+            try:
+                user = Users.objects.get(id=user.id)
+            except Users.DoesNotExist():
+                response = {
+                    "message": "User not found",
+                    "statusCode": status.HTTP_404_NOT_FOUND,
+                }
+                return Response(response, status=status.HTTP_404_NOT_FOUND)
             queryset = Withdrawals.objects.all()
             serializer= WithdrawalRequestGetSerializer
             data= serializer(queryset, many=True).data
@@ -83,20 +82,18 @@ class WithdrawalRequestRetrieveView(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
     
     def get(self, request,pk=None, *args, **kwargs):
-      #change the request.user to request.GET.get("user_id", None)
         user = request.user
         
         if user is not None:
-            #add this when authentication is complete
 
-            # try:
-            #     user = Users.objects.get(id=user_id)
-            # except Users.DoesNotExist():
-            #     response = {
-            #         "message": "User not found",
-            #         "statusCode": status.HTTP_404_NOT_FOUND,
-            #     }
-            #     return Response(response, status=status.HTTP_404_NOT_FOUND)
+            try:
+                user = Users.objects.get(id=user.id)
+            except Users.DoesNotExist():
+                response = {
+                    "message": "User not found",
+                    "statusCode": status.HTTP_404_NOT_FOUND,
+                }
+                return Response(response, status=status.HTTP_404_NOT_FOUND)
         
             if pk is not None:
                 queryset = Withdrawals.objects.get(id=pk)
@@ -116,37 +113,4 @@ class WithdrawalRequestRetrieveView(generics.ListAPIView):
             return Response(response, status=status.HTTP_400_BAD_REQUEST)
 
 
-# class WithdrawalRequestGetView(generics.RetrieveAPIView):
-#     serializer_class = WithdrawalRequestGetSerializer
-#     permission_classes = [IsAuthenticated]
-    
-#     def get(self, request, *args, **kwargs):
-#         user_id = request.GET.get("user_id", None)
-        
-#         if user_id is not None and user_id != "":
-#             try:
-#                 user = Users.objects.get(id=user_id)
-#             except Users.DoesNotExist():
-#                 response = {
-#                     "message": "User not found",
-#                     "statusCode": status.HTTP_404_NOT_FOUND,
-#                 }
-#                 return Response(response, status=status.HTTP_404_NOT_FOUND)
-        
-#             queryset = Withdrawals.objects.filter(user_id=user_id)
-#             serializer = self.get_serializer(queryset, many=True)
-            
-#             response = {
-#                 "message": "Withdrawal request retrieved successfully",
-#                 "statusCode": status.HTTP_200_OK,
-#                 "data": serializer.data
-#             }    
-#             return Response(response, status=status.HTTP_200_OK)
-        
-#         else:
-#             response = {
-#                 "message": "Used ID is required",
-#                 "statusCode": status.HTTP_400_BAD_REQUEST,
-#             }
-#             return Response(response, status=status.HTTP_400_BAD_REQUEST)
         
