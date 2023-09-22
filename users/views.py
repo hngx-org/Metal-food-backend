@@ -10,14 +10,13 @@ from rest_framework import generics
 from .serializers import *
 from .utils import *
 
-from .serializers import GetOrganizationSetializer, InviteSerializer
 from .tokens import create_jwt_pair_for_user
 from .utils import EmailManager, generate_token
 
 # Create your views here.
 
 class OrganizationCreateAPIView(generics.CreateAPIView):
-    serializer_class = GetOrganizationSetializer
+    serializer_class = GetOrganizationSerializer
     permission_classes = [AllowAny]
 
     def create(self, request):
