@@ -1,19 +1,22 @@
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import generics, status
+from rest_framework import permissions
+from .serializers import *
+from django.db.models import Q
+from django.shortcuts import get_object_or_404
+
+from .models import Users, OrganizationLunchWallet, OrganizationInvites
+
+from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate, get_user_model
+from rest_framework import generics, status
 from django.contrib.auth import get_user_model
 from rest_framework import generics, status, views
 from rest_framework.permissions import AllowAny, IsAuthenticated
-from rest_framework.response import Response
-from rest_framework.views import APIView
 from rest_framework_simplejwt.exceptions import AuthenticationFailed
 from rest_framework_simplejwt.tokens import RefreshToken
-from .serializers import (
-    LunchWalletSerializer,
-    GetOrganizationSerializer,
-    InviteSerializer,
-    RegisterSerializer,
-    LoginSerializer,
-    AllUserSerializer,
-    UserProfileSerializer,
-)
+from .utils import *
 
 from .tokens import create_jwt_pair_for_user
 from .utils import EmailManager, generate_token, BaseResponse
@@ -21,7 +24,22 @@ from .backends import CustomUserBackend
 
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
-from .models import Users, OrganizationLunchWallet, OrganizationInvites
+
+class AddBankAccountView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def patch(self, request):
+        user = request.user
+        serializer = BankAccountSerializer(user, data=request.data, partial=True)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response({
+                "message": "Bank account information updated successfully"
+                }, status=status.HTTP_200_OK)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 User = get_user_model()
 authenticate = CustomUserBackend.authenticate
@@ -84,7 +102,7 @@ class RegisterUserView(generics.CreateAPIView):
     """
 
     authentication_classes = ()
-    permission_classes = ()
+    permission_classes = [AllowAny]
     serializer_class = RegisterSerializer
 
     def create(self, request, *args, **kwargs):
@@ -97,6 +115,7 @@ class RegisterUserView(generics.CreateAPIView):
             serializer = RegisterSerializer(data=request.data, context={"org": org})
             serializer.is_valid(raise_exception=True)
             user = serializer.save()
+            user.is_active = True
 
             response_data = {
                 "first_name": user.first_name,
@@ -112,6 +131,10 @@ class RegisterUserView(generics.CreateAPIView):
 
         except Exception as e:
             return Response({"Error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+# class RegisterOrganisationView(generics.CreateAPIView):
+    
 
 
 class LoginView(APIView):
@@ -132,8 +155,8 @@ class LoginView(APIView):
             email = request.data.get("email")
             password = request.data.get("password")
 
-            if not email or password:
-                raise AuthenticationFailed("Both emil and password is required")
+            # if not email or password:
+            #     raise AuthenticationFailed("Both emil and password is required")
 
             user = authenticate(email=email, password=password)
             if user is not None:
@@ -151,26 +174,22 @@ class LoginView(APIView):
 
 class LogoutView(APIView):
     """
-    Handle user logout request
+    View to logout a user
     """
+    permission_classes = (IsAuthenticated,)
 
     def post(self, request):
-        refresh_token = request.data.get("refresh_token")
+        try:
+            refresh_token = request.data.get("refresh_token")
+           
+            token = RefreshToken(refresh_token)
+            token.blacklist()
+            base_response = BaseResponse(None, None, 'Successfully logged out.')
+            return Response(base_response.to_dict(), status=status.HTTP_200_OK)
+        except Exception as e:
+            print(type(str(e)))
+            return abort(400, str(e))
 
-        if refresh_token:
-            try:
-                RefreshToken(token=refresh_token).blacklist()
-                return Response(
-                    {"message": "Logout successfully"}, status=status.HTTP_20O_OK
-                )
-            except Exception as e:
-                return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
-
-        else:
-            Response(
-                {"error": "Refresh token is required"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
 
 
 class UpdateOrganizationLunchWallet(APIView):
