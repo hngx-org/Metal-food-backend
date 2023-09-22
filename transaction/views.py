@@ -134,7 +134,7 @@ class WithdrawalRequestCreateView(generics.CreateAPIView):
                 "statusCode": status.HTTP_201_CREATED,
                 "data": {
                     "id": withdrawal_request.id,
-                    "user_id": withdrawal_request.user_id,
+                    "user_id": withdrawal_request.user_id.id,
                     "status": withdrawal_request.status,
                     "amount": withdrawal_request.amount,
                     "created_at": withdrawal_request.created_at.isoformat(),
