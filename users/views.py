@@ -1,5 +1,5 @@
-from django.contrib.auth import authenticate, get_user_model
-from rest_framework import generics, status
+from django.contrib.auth import get_user_model
+from rest_framework import generics, status, views
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -17,20 +17,22 @@ from .serializers import (
 
 from .tokens import create_jwt_pair_for_user
 from .utils import EmailManager, generate_token, BaseResponse
+from .backends import CustomUserBackend
 
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from .models import Users, OrganizationLunchWallet, OrganizationInvites
 
 User = get_user_model()
+authenticate = CustomUserBackend.authenticate
 
 
-class OrganizationCreateAPIView(generics.CreateAPIView):
+class OrganizationCreateAPIView(views.APIView):
     serializer_class = GetOrganizationSerializer
     permission_classes = [AllowAny]
 
-    def create(self, request):
-        serializer = self.get_serializer(data=request.data)
+    def post(self, request):
+        serializer = GetOrganizationSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         org = serializer.save()
         data = {

@@ -114,9 +114,18 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# PASSWORD_HASHERS = [
+#     "django.contrib.auth.hashers.BCryptSHA256PasswordHasher",
+# ]
+
 PASSWORD_HASHERS = [
+    "django.contrib.auth.hashers.PBKDF2PasswordHasher",
+    "django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher",
+    "django.contrib.auth.hashers.Argon2PasswordHasher",
     "django.contrib.auth.hashers.BCryptSHA256PasswordHasher",
+    "django.contrib.auth.hashers.ScryptPasswordHasher",
 ]
+
 
 
 # Internationalization
@@ -131,6 +140,10 @@ USE_I18N = True
 USE_TZ = True
 
 AUTH_USER_MODEL = 'users.Users'
+
+AUTHENTICATION_BACKENDS = [
+    'users.backends.CustomUserBackend',
+]
 
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=10),
@@ -148,9 +161,6 @@ SIMPLE_JWT = {
     'TOKEN_TYPE_CLAIM': 'token_type',
 }
 
-PASSWORD_HASHERS = [
-    'django.contrib.auth.hashers.BCryptSHA256PasswordHasher',
-]
 
 REST_FRAMEWORK = {
     # Use Django's standard `django.contrib.auth` permissions,
