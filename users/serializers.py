@@ -162,3 +162,8 @@ class LunchWalletSerializer(ModelSerializer):
     class Meta:
         model = OrganizationLunchWallet
         fields = ('balance',)
+        
+class AllUserSerializer(ModelSerializer):
+    class Meta:
+        model = Users
+        fields = ('id', 'first_name', 'last_name', 'email', 'profile_picture')

@@ -3,6 +3,8 @@ from rest_framework.response import Response
 from rest_framework import generics, status
 from rest_framework import permissions
 from .serializers import *
+from django.db.models import Q
+from django.shortcuts import get_object_or_404
 
 from .models import OrganizationLunchWallet
 
@@ -32,6 +34,12 @@ class AddBankAccountView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 # Create your views here.
+
+# from .models import Users
+# from rest_framework.views import APIView
+# from .models import OrganizationLunchWallet
+# from rest_framework.response import Response
+# from .serializers import LunchWalletSerializer
 
 class OrganizationCreateAPIView(generics.CreateAPIView):
     serializer_class = GetOrganizationSerializer
@@ -201,4 +209,34 @@ class UpdateOrganizationLunchWallet(APIView):
         return Response({
             "message": "error",
             "error": serializer.errors
+        })
+        
+
+class ListUsersView(generics.ListAPIView):
+    queryset = Users.objects.all()
+    serializer_class = AllUserSerializer
+    permission_classes = [IsAuthenticated]
+
+class SearchUserView(generics.RetrieveAPIView):
+    serializer_class = AllUserSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        nameoremail = self.kwargs.get('nameoremail')  # Get the nameoremail parameter from the URL
+        # Perform a case-insensitive search on first_name, last_name, and email
+        queryset = Users.objects.filter(
+            Q(first_name__icontains=nameoremail) |
+            Q(last_name__icontains=nameoremail) |
+            Q(email__icontains=nameoremail)
+        )
+        return queryset
+
+    def retrieve(self, request, nameoremail):
+        queryset = self.get_queryset()
+        user = get_object_or_404(queryset)
+        serializer = AllUserSerializer(user)
+        return Response({
+            "message": "User found",
+            "statusCode": status.HTTP_200_OK,
+            "data": serializer.data
         })

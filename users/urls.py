@@ -16,5 +16,7 @@ urlpatterns = [
     
     path("organization/staff/signup", RegisterUserView.as_view(), name="sign-up"),
     path('api/organization/<int:org_id>/wallet/update/', UpdateOrganizationLunchWallet.as_view()),
-
+    
+    path('api/user/all', ListUsersView.as_view(), name='list-users'),
+    path('api/search/<str:nameoremail>/', SearchUserView.as_view(), name='search-user'),
 ]
