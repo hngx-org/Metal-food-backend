@@ -4,7 +4,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated,AllowAny
 from .models import Withdrawals,Lunch
-from .serializers import LunchSerializers,WithdrawalCountSerializer,LaunchSerializerPost,RedeemSerialize
+from .serializers import LunchSerializers,WithdrawalCountSerializer,LaunchSerializerPost,RedeemSerialize, WithdrawalRequestSerializer
 from rest_framework.authentication import TokenAuthentication, BasicAuthentication, SessionAuthentication
 from users.models import Users
 from django.shortcuts import get_object_or_404
@@ -14,11 +14,10 @@ class ListLunchHistory(generics.ListAPIView):
     permission_classes = [IsAuthenticated,]
     authentication_classes = [TokenAuthentication, BasicAuthentication, SessionAuthentication]
 
-
     def get_queryset(self):
         user = self.request.user 
         query_set = Lunch.objects.filter(sender_id=user) | Lunch.objects.filter(receiver_id=user)
-        return Response({'Lunch History': query_set}, status.HTTP_200_OK)  
+        return query_set 
 
 
         """
@@ -68,3 +67,35 @@ class RedeemLunchView(APIView):
                 lunch.save()
                 receiver.save()
             return Response({ "message": "success",  "statusCode": 200,"data": "null"})
+
+
+class WithdrawalRequestCreateView(generics.CreateAPIView):
+    queryset = Withdrawals.objects.all()
+    serializer_class = WithdrawalRequestSerializer
+    permission_classes = [IsAuthenticated]
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+
+        if serializer.is_valid(raise_exception=True):
+            withdrawal_request = Withdrawals.objects.create(
+                amount=serializer.validated_data["amount"],
+                user_id=request.user
+            )
+
+            withdrawal_request.status = "success"
+            withdrawal_request.save()
+
+            response_data = {
+                "message": "Withdrawal request created successfully",
+                "statusCode": status.HTTP_201_CREATED,
+                "data": {
+                    "id": withdrawal_request.id,
+                    "user_id": withdrawal_request.user_id,
+                    "status": withdrawal_request.status,
+                    "amount": withdrawal_request.amount,
+                    "created_at": withdrawal_request.created_at.isoformat()
+                }
+            }
+
+            return Response(response_data, status=status.HTTP_201_CREATED)
