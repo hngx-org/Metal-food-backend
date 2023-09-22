@@ -31,19 +31,24 @@ class LaunchSerializerPost(serializers.Serializer):
         queryset=Users.objects.all(), many=True
     )
 
-    def validate_quantity(self, value):
+    def validate_quantity(self, Value):
+
         if int(value) < 1:
-            raise serializers.ValidationError("Lunch given should be above 0")
+            raise serializers.ValidationError("Non-Negative Lunch Transfers")
+
         else:
             return value
 
+
     def validate(self, data):
+
         sender_Id = self.context["senderId"]
+
         if sender_Id in data["receivers"]:
             raise serializers.ValidationError("You can't send lunch to yourself")
+
         else:
             return data
-
 
 class RedeemSerialize(serializers.Serializer):
     id = serializers.ListField(child=serializers.IntegerField(), allow_empty=False)
