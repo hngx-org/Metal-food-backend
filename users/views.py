@@ -1,7 +1,7 @@
 from rest_framework import generics
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.exceptions import AuthenticationFailed
 from rest_framework.permissions import AllowAny
@@ -12,21 +12,11 @@ from django.contrib.auth.hashers import check_password
 from rest_framework import permissions
 from django.db import models
 
-
 # Create your views here.
 from rest_framework import generics
 from rest_framework import permissions
 from .models import Users, Organization
 from .serializers import UsersSerializer
-
-class UsersListView(generics.ListAPIView):
-    serializer_class = UsersSerializer
-    permission_classes = [permissions.IsAuthenticated]
-
-    def get_queryset(self):
-        org_id = self.kwargs.get('org_id')
-        queryset = Users.objects.filter(org_id=org_id)
-        return queryset
 
 from django.contrib.auth import authenticate
 from .utils import response, abort, BaseResponse
@@ -123,8 +113,15 @@ class RegisterUserView(generics.CreateAPIView):
 from rest_framework.response import Response
 
 class LoginView(APIView):
+
     
     permission_classes = [AllowAny]
+
+    """
+     handles both organizatio and user
+     login requests
+    """
+
     
     def post(self, request):
         login_serializer = LoginSerializer(data=request.data)
@@ -178,15 +175,37 @@ class LogoutView(APIView):
                 return response({"error": str(e)},
                                 status=status.HTTP_400_BAD_REQUEST)
                 
+
             else:
                 
                 return Response({'error': 'Refresh token is required'}, status=status.HTTP_400_BAD_REQUEST)
              
         
             
+
+        else:
+
             return Response({'error': 'Refresh token is required'}, status=status.HTTP_400_BAD_REQUEST)
 
+class UsersListView(generics.ListAPIView):
+    serializer_class = UsersSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
+    def get_queryset(self):
+        org_id = self.kwargs.get('org_id')
+        queryset = Users.objects.filter(org_id=org_id)
+        return queryset
+    
+    def get(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        serializers = self.get_serializer(queryset, many=True)
+        response = {
+            "message": "User found",
+            "statusCode": status.HTTP_200_OK,
+            "data": serializers.data
+        }
+        return Response(response, status=status.HTTP_200_OK)
+    
 class UserRetrieveView(generics.RetrieveAPIView):
     serializer_class = UserProfileSerializer
     permission_classes = [IsAuthenticated]
@@ -197,21 +216,6 @@ class UserRetrieveView(generics.RetrieveAPIView):
         serializers = self.get_serializer(instance)
         response = {
             "message": "User data fetched successfully",
-            "statusCode": status.HTTP_200_OK,
-            "data": serializers.data
-        }
-        return Response(response, status=status.HTTP_200_OK)
-
-
-class UserGetView(generics.ListAPIView):
-    serializer_class = UserGetSerializer
-    queryset = Users.objects.all()
-    
-    def get(self, request, *args, **kwargs):
-        instance = self.get_queryset()
-        serializers = self.get_serializer(instance, many=True)
-        response  = {
-            "message": "Users data fetched successfully",
             "statusCode": status.HTTP_200_OK,
             "data": serializers.data
         }
@@ -241,6 +245,7 @@ class UserSearchView(generics.ListAPIView):
             "message": "User found",
             "statusCode": status.HTTP_200_OK,
             "data": serializers.data
+
             }
             
             
@@ -256,5 +261,9 @@ class UserSearchView(generics.ListAPIView):
     
         
     
+
+        }
+        return Response(response, status=status.HTTP_200_OK)
+
 
             
