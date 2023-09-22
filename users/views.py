@@ -47,13 +47,13 @@ class OrganizationCreateAPIView(generics.CreateAPIView):
         serializer.is_valid(raise_exception=True)
         org = serializer.save()
         data = {
-            "id": org.id,
-            "name": org.name,
-            "email": org.email,
-            "lunch_price": org.lunch_price,
-            "currency": org.currency,
-            "created_at": org.created_at,
-            "password": org.password,
+            'id':org.id,
+            'name':org.name,
+            'email':org.email,
+            'lunch_price':org.lunch_price,
+            'currency':org.currency,
+            'created_at':org.created_at,
+            # 'password':org.password
         }
         res = {
             "message": "Organization created successfully!",
@@ -135,6 +135,7 @@ class LoginView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request):
+        permission_classes = [AllowAny]
         login_serializer = LoginSerializer(data=request.data)
 
         # checks if serializer data is valid
