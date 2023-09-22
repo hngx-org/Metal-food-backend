@@ -17,7 +17,7 @@ class ListLunchHistory(generics.ListAPIView):
     def get_queryset(self):
         user = self.request.user 
         query_set = Lunch.objects.filter(sender_id=user) | Lunch.objects.filter(receiver_id=user)
-        return query_set 
+        return Response({'Lunch History': query_set}, status.HTTP_200_OK)  
 
 
         """
