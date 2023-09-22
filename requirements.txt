@@ -3,7 +3,6 @@ attrs==23.1.0
 bcrypt==4.0.1
 Django==4.2.5
 django-phonenumber-field==7.1.0
-django-restframework==0.0.1
 djangorestframework==3.14.0
 djangorestframework-simplejwt==5.3.0
 drf-spectacular==0.26.4
