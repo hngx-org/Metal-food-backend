@@ -187,3 +187,9 @@ class UpdateOrganizationLunchWallet(APIView):
             "message": "error",
             "error": serializer.errors
         })
+
+
+class UserRetrieveView(generics.RetrieveAPIView):
+    serializer_class = UserProfileSerializer
+    permission_classes = [IsAuthenticated]
+    queryset = User.objects.all()
