@@ -115,7 +115,7 @@ class UsersSerializer(serializers.ModelSerializer):
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
-    name = serializers.SerializerMethodField()
+    name = serializers.SerializerMethodField() 
     profile_picture = serializers.SerializerMethodField()
     isAdmin = serializers.BooleanField(source="is_staff")
     
