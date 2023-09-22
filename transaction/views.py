@@ -9,12 +9,13 @@ from users.models import Users
 
 
 class WithdrawalRequestCreateView(generics.CreateAPIView):
+    queryset = Withdrawals.objects.all()
     serializer_class = WithdrawalRequestSerializer
     permission_classes = [AllowAny]
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
-        
+
         if serializer.is_valid(raise_exception=True):
             bank_name=serializer.validated_data["bank_name"],
             bank_account=serializer.validated_data["bank_account"],
@@ -22,10 +23,8 @@ class WithdrawalRequestCreateView(generics.CreateAPIView):
             amount=serializer.validated_data["amount"],
             
             withdrawal_request = Withdrawals.objects.create(
-                # user_id=request.user, 
-                user_id=1,
-                status="pending",
-                amount=amount,
+                amount=serializer.validated_data["amount"],
+                user_id=request.user
             )
 
             withdrawal_request.status = "success"
@@ -44,32 +43,34 @@ class WithdrawalRequestCreateView(generics.CreateAPIView):
             }
 
             return Response(response_data, status=status.HTTP_201_CREATED)
+        
+        return self.create(request, *args, **kwargs)
 
-
-class WithdrawalRequestGetView(generics.RetrieveAPIView):
+class WithdrawalRequestListView(generics.ListAPIView):
     serializer_class = WithdrawalRequestGetSerializer
     permission_classes = [IsAuthenticated]
     
     def get(self, request, *args, **kwargs):
-        user_id = request.GET.get("user_id", None)
         
-        if user_id is not None and user_id != "":
+        user = request.user
+        
+        if user is not None:
             try:
-                user = Users.objects.get(id=user_id)
+                user_id = Users.objects.get(id=user.id)
             except Users.DoesNotExist():
                 response = {
                     "message": "User not found",
                     "statusCode": status.HTTP_404_NOT_FOUND,
                 }
                 return Response(response, status=status.HTTP_404_NOT_FOUND)
-        
-            queryset = Withdrawals.objects.filter(user_id=user_id)
-            serializer = self.get_serializer(queryset, many=True)
+            queryset = Withdrawals.objects.all()
+            serializer= WithdrawalRequestGetSerializer
+            data= serializer(queryset, many=True).data
             
             response = {
                 "message": "Withdrawal request retrieved successfully",
                 "statusCode": status.HTTP_200_OK,
-                "data": serializer.data
+                "data": data
             }    
             return Response(response, status=status.HTTP_200_OK)
         
@@ -79,4 +80,42 @@ class WithdrawalRequestGetView(generics.RetrieveAPIView):
                 "statusCode": status.HTTP_400_BAD_REQUEST,
             }
             return Response(response, status=status.HTTP_400_BAD_REQUEST)
+
+
+class WithdrawalRequestRetrieveView(generics.ListAPIView):
+    serializer_class = WithdrawalRequestGetSerializer
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, request,pk=None, *args, **kwargs):
+        user = request.user
+        
+        if user is not None:
+
+            try:
+                user_id = Users.objects.get(id=user.id)
+            except Users.DoesNotExist():
+                response = {
+                    "message": "User not found",
+                    "statusCode": status.HTTP_404_NOT_FOUND,
+                }
+                return Response(response, status=status.HTTP_404_NOT_FOUND)
+        
+            if pk is not None:
+                queryset = Withdrawals.objects.get(id=pk)
+                data = WithdrawalRequestGetSerializer(queryset, many=False).data
+                response = {
+                    "message": "Withdrawal request retrieved successfully",
+                    "statusCode": status.HTTP_200_OK,
+                    "data": data
+                }    
+                return Response(response, status=status.HTTP_200_OK)
+        
+        else:
+            response = {
+                "message": "Used ID is required",
+                "statusCode": status.HTTP_400_BAD_REQUEST,
+            }
+            return Response(response, status=status.HTTP_400_BAD_REQUEST)
+
+
         
