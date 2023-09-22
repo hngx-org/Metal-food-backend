@@ -1,11 +1,5 @@
 import logging
-import secrets
-from typing import Any
-
-from django.conf import settings
-from django.core.mail import send_mail
 from django.http import JsonResponse
-from django.template.loader import TemplateDoesNotExist, render_to_string
 
 Logger = logging.getLogger()
 
@@ -55,13 +49,19 @@ class BaseResponse(object):
         'data': self.data,
     }
   
+import secrets
+from typing import Any
+
+from django.conf import settings
+from django.core.mail import send_mail
+from django.template.loader import TemplateDoesNotExist, render_to_string
+
+Logger = logging.getLogger()
 
 def generate_token()-> str:
   """Generates 6 digit random token."""
   otp = "".join([f"{secrets.randbelow(10)}" for _ in range(6)])
   return otp
-
-
 
 
 
@@ -75,7 +75,7 @@ class EmailManager:
 
 
     @classmethod
-    def send_mail(
+    async def send_mail(
        self,
        subject: str,
        recipients: list[str],
@@ -113,5 +113,17 @@ class EmailManager:
             message=message,
             html_message=html_message,
         )
+            # message = Mail(
+            #     from_email='ddummydum11@gmail.com',
+            #     to_emails=recipients,
+            #     subject=subject,
+            #     html_content=html_message
+            # )
+            # try:
+            #     sg = SendGridAPIClient(os.environ.get('SENDGRID_API_KEY'))
+            #     response = sg.send(message)
+            #     print(response.status_code)
+            #     print(response.body)
+            #     print(response.header)
         except Exception as error:
             Logger.log(msg=error, level=logging.ERROR)

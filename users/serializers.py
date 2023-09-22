@@ -1,10 +1,12 @@
 from rest_framework import serializers
+
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from django.contrib.auth import get_user_model
-from  .models import Users, Organization, OrganizationInvites
+from .models import Users, Organization, OrganizationInvites
+from zeus import settings
 
 
 class GetOrganizationSerializer(serializers.ModelSerializer):
@@ -70,7 +72,7 @@ class UserSerializer(serializers.ModelSerializer):
 class RegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['first_name', 'last_name', 'username', 'email', 'password',]
+        fields = ['first_name', 'last_name', 'phone_number','otp','email', 'password',]
         extra_kwargs = {'password': {'write_only': True}}
 
     def create(self, validated_data):
@@ -79,7 +81,8 @@ class RegisterSerializer(serializers.ModelSerializer):
             email=validated_data['email'],
             last_name=validated_data['last_name'],
             first_name=validated_data['first_name'],
-            username=validated_data['username'],
+            phone_number=validated_data['phone_number'],
+            otp=validated_data['otp'],
             org=org
         )
         user.set_password(validated_data['password'])
@@ -103,7 +106,9 @@ class LoginSerializer(TokenObtainPairSerializer):
         'no_active_account': 'Your account is not active.',
         'invalid_credentials':'Invalid email or password.',
     }
+
     
+
 
 
 class UsersSerializer(serializers.ModelSerializer):
@@ -112,3 +117,54 @@ class UsersSerializer(serializers.ModelSerializer):
         fields = ['id', 'first_name', 'last_name', 'email', 'profile_picture']
 
 
+class UserProfileSerializer(serializers.ModelSerializer):
+    name = serializers.SerializerMethodField()
+    profile_picture = serializers.SerializerMethodField()
+    isAdmin = serializers.BooleanField(source="is_staff")
+    
+    class Meta:
+        model = User
+        fields = ["id", "name", "email", "profile_picture", "isAdmin"]
+        
+    def get_name(self, obj):
+        """Joins first_name and last_name to get name"""
+        return f"{obj.first_name} {obj.last_name}"
+    
+    def get_profile_picture(self, obj):
+        if obj.profile_picture:
+            media_url = settings.MEDIA_URL
+            return f"{media_url}{obj.profile_picture}"
+        return None
+    
+
+class UserGetSerializer(serializers.ModelSerializer):
+    name = serializers.SerializerMethodField()
+    profile_picture = serializers.SerializerMethodField()
+    user_id = serializers.CharField(source="id")
+    
+    class Meta:
+        model = User
+        fields = ["name", "email", "profile_picture", "user_id"]
+        
+    def get_name(self, obj):
+        """Joins first_name and last_name to get name"""
+        return f"{obj.first_name} {obj.last_name}"
+    
+    def get_profile_picture(self, obj):
+        if obj.profile_picture:
+            media_url = settings.MEDIA_URL
+            return f"{media_url}{obj.profile_picture}"
+        return None
+from rest_framework.serializers import ModelSerializer
+from .models import OrganizationLunchWallet, Users
+
+
+class LunchWalletSerializer(ModelSerializer):
+    class Meta:
+        model = OrganizationLunchWallet
+        fields = ('balance',)
+        
+class AllUserSerializer(ModelSerializer):
+    class Meta:
+        model = Users
+        fields = ('id', 'first_name', 'last_name', 'email', 'profile_picture')

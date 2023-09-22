@@ -1,5 +1,7 @@
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin, AbstractUser
 from django.db import models
+
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin, AbstractUser
+from phonenumber_field.modelfields import PhoneNumberField
 from django.utils import timezone
 
 
@@ -9,13 +11,13 @@ class CustomUserManager(BaseUserManager):
             raise ValueError('The Email field must be set')
         email = self.normalize_email(email)
         user = self.model(email=email, **kwargs)
-        # user.set_password(password)
+        user.set_password(password)
         user.save(using=self._db)
         return user
 
     def create_superuser(self, email, password, **kwargs):
         kwargs.setdefault('is_staff', True)
-        kwargs.setdefault('is_superuser', False)
+        kwargs.setdefault('is_superuser', True)
 
         if kwargs.get('is_staff') is not True:
             raise ValueError('Superuser must have is_staff=True.')
@@ -42,13 +44,13 @@ class Organization(AbstractBaseUser, PermissionsMixin):
 
 
 class Users(AbstractBaseUser, PermissionsMixin):
-    org = models.ForeignKey(Organization, on_delete=models.CASCADE)
+    org = models.ForeignKey(Organization, on_delete=models.CASCADE, null=True)
     first_name = models.CharField(max_length=255)
     last_name = models.CharField(max_length=255)
     email = models.EmailField(unique=True, null=False, blank=False)
-    username = models.CharField(unique=True, max_length=100, null=False, blank=False)
+    username = models.CharField(unique=True, max_length=100, null=True, blank=True)
     password = models.CharField(max_length=255, null=False, blank=False)
-    phone_number = models.CharField(max_length=15)
+    phone_number = PhoneNumberField(null=True, blank=True, unique=True)
     profile_picture = models.ImageField(upload_to='profile_image/', null=True)
     refresh_token = models.CharField(max_length=255, null=True)
     bank_number = models.CharField(max_length=20, null=True)
@@ -73,21 +75,21 @@ class Users(AbstractBaseUser, PermissionsMixin):
         blank=True,
         related_name='customuser_set'
     )
-    
+
     objects = CustomUserManager()
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = []
+    REQUIRED_FIELDS = ['first_name', 'last_name', 'username', 'password']
 
     def __str__(self):
         return self.email
     def has_perm(self, perm, obj=None):
-        
+
         return True
     def has_module_perms(self, app_label):
-        
-        return True 
-    
+
+        return True
+
 class OrganizationInvites(models.Model):
     org_id = models.ForeignKey(Organization, on_delete=models.CASCADE, related_name="company")
     email = models.EmailField(unique=True)
@@ -96,19 +98,8 @@ class OrganizationInvites(models.Model):
 
     def __str__(self) -> str:
         return str(self.id)
-    
-    # def is_expired(self):
-    #     """Checks if the invite token has expired"""
-    #     return self.TTL < timezone.now()
-    
-    # def get_remaining_time(self):
-    #     """Get the remaining time until expiration."""
-    #     if not self.is_expired():
-    #         remaining_time = self.TTL - timezone.now()
-    #         return remaining_time.total_seconds()
-    #     return None
 
-
+   
 class OrganizationLunchWallet(models.Model):
     org_id = models.ForeignKey(Organization, on_delete=models.CASCADE)
     balance = models.DecimalField(
@@ -116,4 +107,3 @@ class OrganizationLunchWallet(models.Model):
 
     def __str__(self) -> str:
         return str(self.id)
-
