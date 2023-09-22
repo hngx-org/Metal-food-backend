@@ -23,16 +23,16 @@ class ListLunchHistory(generics.ListAPIView):
         """
         Get the count of withdrawal made by user
         """
-# class WithdrawalCountView(generics.RetrieveAPIView):
-#     permission_classes = [IsAuthenticated]
+class WithdrawalCountView(generics.RetrieveAPIView):
+    permission_classes = [IsAuthenticated]
 
-#     def retrieve(self, request, *args, **kwargs):
-#         #  count of withdrawal requests for the user
-#         withdrawal_count = Withdrawals.objects.filter(user=request.user).count()
-#         serializer = WithdrawalCountSerializer({
-#             "user_id": request.user.id,
-#             "withdrawal_count": withdrawal_count,
-#         })
+    def retrieve(self, request, *args, **kwargs):
+        #  count of withdrawal requests for the user
+        withdrawal_count = Withdrawals.objects.filter(user=request.user).count()
+        serializer = WithdrawalCountSerializer({
+            "user_id": request.user.id,
+            "withdrawal_count": withdrawal_count,
+        })
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 class SendLunchView(generics.CreateAPIView):
