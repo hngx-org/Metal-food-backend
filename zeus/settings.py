@@ -113,7 +113,7 @@ DATABASES = {
         'NAME': 'team_metal_db',
         'USER': 'team_metal_user',
         'PASSWORD': 'SYW9oco2st70Mn6RYcRdrthmt6B3QnLo',
-        'HOST': 'http://dpg-ck6t8avsasqs73djrtp0-a.oregon-postgres.render.com/',  # Set to the PostgreSQL server host
+        'HOST': 'dpg-ck6t8avsasqs73djrtp0-a.oregon-postgres.render.com',  # Set to the PostgreSQL server host
         'PORT': '5432',       # Set to the PostgreSQL server port
     }
 }
