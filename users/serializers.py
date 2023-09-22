@@ -156,3 +156,11 @@ class UserGetSerializer(serializers.ModelSerializer):
             media_url = settings.MEDIA_URL
             return f"{media_url}{obj.profile_picture}"
         return None
+from rest_framework.serializers import ModelSerializer
+from .models import OrganizationLunchWallet
+
+
+class LunchWalletSerializer(ModelSerializer):
+    class Meta:
+        model = OrganizationLunchWallet
+        fields = ('balance',)
