@@ -128,8 +128,9 @@ class LoginView(APIView):
      handles both organization and user
      login requests
     """
+    permission_classes = [AllowAny]
+    
     def post(self, request):
-        permission_classes = [IsAuthenticated]
         login_serializer = LoginSerializer(data=request.data)
 
         # checks if serializer data is valid
@@ -232,3 +233,19 @@ class SearchUserView(generics.RetrieveAPIView):
             "statusCode": status.HTTP_200_OK,
             "data": serializer.data
         })
+
+
+class UserRetrieveView(generics.RetrieveAPIView):
+    serializer_class = UserProfileSerializer
+    permission_classes = [IsAuthenticated]
+    queryset = User.objects.all()
+    
+    def get(self, request, *args, **kwargs):
+        queryset = self.get_object()
+        serializer = self.get_serializer(queryset)
+        response = {
+            "message": "User data fetched successfully",
+            "statusCode": status.HTTP_200_OK,
+            "data": serializer.data
+        }
+        return Response(response, status=status.HTTP_200_OK)
