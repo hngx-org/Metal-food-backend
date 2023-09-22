@@ -54,13 +54,13 @@ class OrganizationCreateAPIView(generics.CreateAPIView):
         serializer.is_valid(raise_exception=True)
         org = serializer.save()
         data = {
-            "id": org.id,
-            "name": org.name,
-            "email": org.email,
-            "lunch_price": org.lunch_price,
-            "currency": org.currency,
-            "created_at": org.created_at,
-            "password": org.password,
+            'id':org.id,
+            'name':org.name,
+            'email':org.email,
+            'lunch_price':org.lunch_price,
+            'currency':org.currency,
+            'created_at':org.created_at,
+            # 'password':org.password
         }
         res = {
             "message": "Organization created successfully!",
@@ -102,7 +102,7 @@ class RegisterUserView(generics.CreateAPIView):
     """
 
     authentication_classes = ()
-    permission_classes = ()
+    permission_classes = [AllowAny]
     serializer_class = RegisterSerializer
 
     def create(self, request, *args, **kwargs):
@@ -115,6 +115,7 @@ class RegisterUserView(generics.CreateAPIView):
             serializer = RegisterSerializer(data=request.data, context={"org": org})
             serializer.is_valid(raise_exception=True)
             user = serializer.save()
+            user.is_active = True
 
             response_data = {
                 "first_name": user.first_name,
@@ -132,6 +133,10 @@ class RegisterUserView(generics.CreateAPIView):
             return Response({"Error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
+# class RegisterOrganisationView(generics.CreateAPIView):
+    
+
+
 class LoginView(APIView):
     """
     handles both organization and user
@@ -141,6 +146,7 @@ class LoginView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request):
+        permission_classes = [AllowAny]
         login_serializer = LoginSerializer(data=request.data)
 
         # checks if serializer data is valid
@@ -149,8 +155,8 @@ class LoginView(APIView):
             email = request.data.get("email")
             password = request.data.get("password")
 
-            if not email or password:
-                raise AuthenticationFailed("Both emil and password is required")
+            # if not email or password:
+            #     raise AuthenticationFailed("Both emil and password is required")
 
             user = authenticate(email=email, password=password)
             if user is not None:
@@ -168,26 +174,21 @@ class LoginView(APIView):
 
 class LogoutView(APIView):
     """
-    Handle user logout request
+    View to logout a user
     """
+    permission_classes = (IsAuthenticated,)
 
     def post(self, request):
-        refresh_token = request.data.get("refresh_token")
-
-        if refresh_token:
-            try:
-                RefreshToken(token=refresh_token).blacklist()
-                return Response(
-                    {"message": "Logout successfully"}, status=status.HTTP_20O_OK
-                )
-            except Exception as e:
-                return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
-
-        else:
-            Response(
-                {"error": "Refresh token is required"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+        try:
+            refresh_token = request.data.get("refresh_token")
+           
+            token = RefreshToken(refresh_token)
+            token.blacklist()
+            base_response = BaseResponse(None, None, 'Successfully logged out.')
+            return Response(base_response.to_dict(), status=status.HTTP_200_OK)
+        except Exception as e:
+            print(type(str(e)))
+            return abort(400, str(e))
 
 
 
@@ -255,8 +256,8 @@ class UserRetrieveView(generics.RetrieveAPIView):
     queryset = User.objects.all()
 
     def get(self, request, *args, **kwargs):
-        queryset = self.get_object()
-        serializer = self.get_serializer(queryset)
+        current_user = request.user
+        serializer = self.get_serializer(current_user)
         response = {
             "message": "User data fetched successfully",
             "statusCode": status.HTTP_200_OK,
