@@ -47,13 +47,13 @@ class OrganizationCreateAPIView(generics.CreateAPIView):
         serializer.is_valid(raise_exception=True)
         org = serializer.save()
         data = {
-            "id": org.id,
-            "name": org.name,
-            "email": org.email,
-            "lunch_price": org.lunch_price,
-            "currency": org.currency,
-            "created_at": org.created_at,
-            "password": org.password,
+            'id':org.id,
+            'name':org.name,
+            'email':org.email,
+            'lunch_price':org.lunch_price,
+            'currency':org.currency,
+            'created_at':org.created_at,
+            # 'password':org.password
         }
         res = {
             "message": "Organization created successfully!",
@@ -95,7 +95,7 @@ class RegisterUserView(generics.CreateAPIView):
     """
 
     authentication_classes = ()
-    permission_classes = ()
+    permission_classes = [AllowAny]
     serializer_class = RegisterSerializer
 
     def create(self, request, *args, **kwargs):
@@ -108,6 +108,7 @@ class RegisterUserView(generics.CreateAPIView):
             serializer = RegisterSerializer(data=request.data, context={"org": org})
             serializer.is_valid(raise_exception=True)
             user = serializer.save()
+            user.is_active = True
 
             response_data = {
                 "first_name": user.first_name,
@@ -134,6 +135,7 @@ class LoginView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request):
+        permission_classes = [AllowAny]
         login_serializer = LoginSerializer(data=request.data)
 
         # checks if serializer data is valid
@@ -142,8 +144,8 @@ class LoginView(APIView):
             email = request.data.get("email")
             password = request.data.get("password")
 
-            if not email or password:
-                raise AuthenticationFailed("Both emil and password is required")
+            # if not email or password:
+            #     raise AuthenticationFailed("Both emil and password is required")
 
             user = authenticate(email=email, password=password)
             if user is not None:
