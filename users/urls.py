@@ -16,6 +16,7 @@ urlpatterns = [
     path('organization/create', OrganizationCreateAPIView.as_view(), name='create-organization'),
     path('organization/invite', CreateInviteView.as_view(), name='token_invite'),
     
-    path("organization/staff/signup", RegisterUserView.as_view(), name="sign-up")
+    path("organization/staff/signup", RegisterUserView.as_view(), name="sign-up"),
+    path('api/organization/<int:org_id>/wallet/update/', UpdateOrganizationLunchWallet.as_view()),
 
 ]
