@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt.token_blacklist',
     'users',
     'transaction',
+    'drf_yasg',
 ]
 
 MIDDLEWARE = [
@@ -168,7 +169,7 @@ REST_FRAMEWORK = {
 
 
 SPECTACULAR_SETTINGS = {
-    'TITLE': 'Zeus API',
+    'TITLE': 'Zeus Free Lunch API',
     'DESCRIPTION': 'An app for gifting free lunch',
     'VERSION': '1.0.0',
     'SERVE_INCLUDE_SCHEMA': False,

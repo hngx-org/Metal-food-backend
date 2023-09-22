@@ -29,7 +29,8 @@ class AddBankAccountView(APIView):
         if serializer.is_valid():
             serializer.save()
             return Response({
-                "message": "Bank account information updated successfully"
+                "message": "Bank account information updated successfully",
+                "statusCode": status.HTTP_200_OK
                 }, status=status.HTTP_200_OK)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -198,7 +199,11 @@ class UpdateOrganizationLunchWallet(APIView):
     queryset = OrganizationLunchWallet.objects.all()
 
     def patch(self, request, org_id):
-        wallet = OrganizationLunchWallet.objects.get(org_id=org_id)
+        try:
+            wallet = OrganizationLunchWallet.objects.get(org_id=org_id)
+        except OrganizationLunchWallet.DoesNotExist:
+            return Response({"message": "OrganizationLunchWallet not found", "status": status.HTTP_404_NOT_FOUND}, status=status.HTTP_404_NOT_FOUND)
+
         serializer = LunchWalletSerializer(wallet, request.data)
         if serializer.is_valid():
             serializer.save()

@@ -41,6 +41,7 @@ class ListLunchHistory(generics.ListAPIView):
 
 class WithdrawalCountView(generics.RetrieveAPIView):
     permission_classes = [IsAuthenticated]
+    serializer_class = WithdrawalCountSerializer
 
     def retrieve(self, request, *args, **kwargs):
         #  count of withdrawal requests for the user
