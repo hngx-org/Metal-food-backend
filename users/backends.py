@@ -10,22 +10,24 @@ class CustomUserBackend(ModelBackend):
         email = credentials.get('email')
         password = credentials.get('password')
 
-        if email and password:
-            try:
-                user = Users.objects.get(email=email)
-            except Users.DoesNotExist:
-                # print("Not User")
-                try:
-                    user = Organization.objects.get(email=email)
-                except Organization.DoesNotExist:
-                    # print('Not Organization')
-                    return None
+
+        try:
+            user = Users.objects.get(email=email)
             print(user)
-            if not self.user_can_authenticate(user):
-                raise serializers.ValidationError("Account not active!")
-            # print("Can Authenticate")
-            # print(password)           
-            
-            if user.check_password(password) and self.user_can_authenticate(user):
-                # print(user)
-                return user
+        except Exception as e:
+            print(e+"-")
+            # print("Not User")
+        try:
+            user = Organization.objects.get(email=email)
+            print(user)
+        except Exception as e:
+            print(e+"+")
+            return None
+        if not self.user_can_authenticate(user):
+            raise serializers.ValidationError("Account not active!")
+        # print("Can Authenticate")
+        # print(password)           
+        
+        if user.check_password(password) and self.user_can_authenticate(user):
+            # print(user)
+            return user

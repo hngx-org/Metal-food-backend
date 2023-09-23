@@ -96,16 +96,16 @@ DATABASES = {
     }
 }
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.mysql',
-#         'NAME': 'free_lunch_test_db',
-#         'USER': 'metal',
-#         'PASSWORD': 'Metal100%',
-#         'HOST': '35.193.20.212',  # Or the hostname where your MySQL server is running
-#         'PORT': '3306',       # MySQL's default port is 3306
-#     }
-# }
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'metal',
+        'USER': 'root',
+        'PASSWORD': 'Oludare2001',
+        'HOST': 'localhost',  # Or the hostname where your MySQL server is running
+        'PORT': '3306',       # MySQL's default port is 3306
+    }
+}
 
 # DATABASES = {
 #     'default': {
@@ -156,9 +156,7 @@ USE_TZ = True
 
 AUTH_USER_MODEL = 'users.Users'
 
-AUTHENTICATION_BACKENDS = [
-    'users.backends.CustomUserBackend',
-]
+
 
 REST_FRAMEWORK = {
     # Use Django's standard `django.contrib.auth` permissions,
@@ -181,7 +179,7 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=10),
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=10),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
     'ROTATE_REFRESH_TOKENS': True,
     'BLACKLIST_AFTER_ROTATION': True,

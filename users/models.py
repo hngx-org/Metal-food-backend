@@ -26,33 +26,24 @@ class CustomUserManager(BaseUserManager):
 
         return self.create_user(email, password, **kwargs)
 
-class Organization(AbstractBaseUser, PermissionsMixin):
-    name = models.CharField(max_length=50, unique=True, null=False)
-    email = models.EmailField(unique=True, null=False, blank=False)
-    
+
+class Organization(models.Model):
+    name = models.CharField(max_length=50, unique=True, null=False)    
     lunch_price = models.DecimalField(max_digits=10, decimal_places=2, default=1000.00)
     currency = models.CharField(max_length=3, default='NGN')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     is_deleted = models.BooleanField(default=False)
 
-    USERNAME_FIELD = "email"
-    objects = CustomUserManager()
-
-    def __str__(self):
-        return self.name
-
-
 class Users(AbstractBaseUser, PermissionsMixin):
     org = models.ForeignKey(Organization, on_delete=models.CASCADE, null=True)
-    first_name = models.CharField(max_length=255)
-    last_name = models.CharField(max_length=255)
+    full_name = models.CharField(max_length=255)
     email = models.EmailField(unique=True, null=False, blank=False)
     username = models.CharField(unique=True, max_length=100, null=True, blank=True)
     password = models.CharField(max_length=255, null=False, blank=False)
     phone_number = PhoneNumberField(null=True, blank=True, unique=True)
     profile_picture = models.ImageField(upload_to='profile_image/', null=True)
-    refresh_token = models.CharField(max_length=255, null=True)
+    token = models.CharField(max_length=255, null=True)
     bank_number = models.CharField(max_length=20, null=True)
     bank_code = models.CharField(max_length=30, null=True)
     bank_name = models.CharField(max_length=30, null=True)

@@ -13,47 +13,22 @@ from .models import OrganizationLunchWallet
 class GetOrganizationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Organization
-        fields = [
-            'id',
-            'name',
-            'email',
-            'lunch_price',
-            'currency',
-            'created_at',
-            'password'
-        ]
-        # extra_kwargs = {
-        #     "password": {"write_only":True, "required": True},
-        # }
-
-        def validate_password(self, value):
-            """Validate password"""
-            try:
-                validate_password(value)
-            except Exception as error:
-                raise serializers.ValidationError(error.error_list)
-            return value
-        
-        def create(self, validated_data):
-            """Create Organization"""
-            password = validate_password(validate_password.pop('password'))
-            validated_data['password'] = make_password(password=password)
-            organization = Organization.objects.create_user(**validated_data)
-            organization.save()
-            return organization
+        fields = ['name', 'lunch_price']
 
 
 class InviteSerializer(serializers.ModelSerializer):
     # organization = GetOrganizationSerializer(read_only=True)
     class Meta:
         model = OrganizationInvites
-        fields = ['org_id', 'email',]
+        fields = ['email',]
 
     def create(self, validated_data):
         """Create Invite"""
         token = self.context.get('token')
+        user = self.context.get('request').user 
+        org_id = user.org_id
         validated_data['token'] = token
-        validated_data['org_id']= validated_data.get('org_id')
+        validated_data['org_id']= org_id
         invite = OrganizationInvites.objects.create(**validated_data)
         invite.save()
         return invite
@@ -78,15 +53,14 @@ class BankAccountSerializer(serializers.ModelSerializer):
 class RegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['first_name', 'last_name', 'username','email', 'password',]
+        fields = ['full_name', 'email', 'password',]
         extra_kwargs = {'password': {'write_only': True}}
 
     def create(self, validated_data):
         org = self.context.get('org')
         user = User(
+            full_name=validated_data['full_name'],
             email=validated_data['email'],
-            last_name=validated_data['last_name'],
-            username=validated_data['username'],
             org=org
         )
         user.set_password(validated_data['password'])
@@ -94,11 +68,22 @@ class RegisterSerializer(serializers.ModelSerializer):
         user.save()
         return user
 
-    def validate_username(self, value):
-        # Check if a user with this username already exists
-        if User.objects.filter(username=value).exists():
-            raise serializers.ValidationError("This username is already in use.")
-        return value
+class RegisterUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['full_name', 'email', 'password',]
+        extra_kwargs = {'password': {'write_only': True}}
+
+    def create(self, validated_data):
+        user = User(
+            full_name=validated_data['full_name'],
+            email=validated_data['email'],
+        )
+        user.set_password(validated_data['password'])
+        user.is_active = True
+        user.save()
+        return user
+
 
 class LoginSerializer(TokenObtainPairSerializer):
     email = serializers.EmailField(required=True)
@@ -107,6 +92,7 @@ class LoginSerializer(TokenObtainPairSerializer):
         'no_active_account': 'Your account is not active.',
         'invalid_credentials':'Invalid email or password.',
     }
+
 
 class UsersSerializer(serializers.ModelSerializer):
     class Meta:
@@ -161,4 +147,4 @@ class LunchWalletSerializer(ModelSerializer):
 class AllUserSerializer(ModelSerializer):
     class Meta:
         model = Users
-        fields = ('id', 'first_name', 'last_name', 'email', 'profile_picture', 'lunch_credit_balance')
+        fields = ('id', 'first_name', 'last_name', 'email', 'profile_picture')

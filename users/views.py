@@ -8,11 +8,7 @@ from django.shortcuts import get_object_or_404
 
 from .models import Users, OrganizationLunchWallet, OrganizationInvites
 from rest_framework_simplejwt.authentication import JWTAuthentication
-<<<<<<< HEAD
 from django.contrib.auth import authenticate, get_user_model, login
-=======
-from django.contrib.auth import get_user_model
->>>>>>> 5c724e48eb989633ffb9ee6a0d47d6c630d28e15
 from rest_framework import generics, status
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework_simplejwt.exceptions import AuthenticationFailed
@@ -21,32 +17,26 @@ from .utils import *
 
 from .tokens import create_jwt_pair_for_user
 from .utils import EmailManager, generate_token, BaseResponse
-from .backends import CustomUserBackend
 
 
 User = get_user_model()
 
-# Do not use `User` from `get_user_model()` above with `authenticate` below
-# Where User or Oganization model is needed for authetication, import directly form `users.models`
-authenticate = CustomUserBackend.authenticate
-
 
 class OrganizationCreateAPIView(generics.CreateAPIView):
     serializer_class = GetOrganizationSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
 
     def create(self, request):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         org = serializer.save()
+        org.is_active = True
         data = {
             'id':org.id,
             'name':org.name,
-            'email':org.email,
             'lunch_price':org.lunch_price,
             'currency':org.currency,
             'created_at':org.created_at,
-            'password':org.password
         }
         res = {
             "message": "Organization created successfully!",
@@ -58,13 +48,15 @@ class OrganizationCreateAPIView(generics.CreateAPIView):
 
 class CreateInviteView(generics.CreateAPIView):
     serializer_class = InviteSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
 
     def create(self, request):
         token = generate_token()
+        org_id = request.user.organization_id
         serializer = self.get_serializer(data=request.data, context={"token": token})
         serializer.is_valid(raise_exception=True)
         invite = serializer.save()
+        
 
         EmailManager.send_mail(
             subject=f"Free Lunch Invite.",
@@ -82,7 +74,7 @@ class CreateInviteView(generics.CreateAPIView):
         return Response(data=res, status=status.HTTP_201_CREATED)
 
 
-class RegisterUserView(generics.CreateAPIView):
+class RegisterSTAFFView(generics.CreateAPIView):
     """View for handling user registration.
     This view handles user registration and returns a response with the serialized data of the newly created user.
     """
@@ -116,61 +108,94 @@ class RegisterUserView(generics.CreateAPIView):
             return Response(base_response.to_dict(), status=status.HTTP_201_CREATED)
 
         except Exception as e:
-            return Response({"Error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"Error": "Email not invited to join this organisation"}, status=status.HTTP_400_BAD_REQUEST)
+
+class RegisterUSERView(generics.CreateAPIView):
+    """View for handling user registration.
+    This view handles user registration and returns a response with the serialized data of the newly created user.
+    """
+
+    authentication_classes = ()
+    permission_classes = [AllowAny]
+    serializer_class = RegisterUserSerializer
+
+    def create(self, request, *args, **kwargs):
+        exception = None
+        try:
+
+            serializer = RegisterUserSerializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            print(serializer.errors)
+            user = serializer.save()
+            user.is_active = True
+
+            response_data = {
+                "first_name": user.full_name,
+                "email": user.email,
+            }
+            base_response = BaseResponse(
+                data=response_data,
+                exception=exception,
+                message="User Created Successfully",
+            )
+            return Response(base_response.to_dict(), status=status.HTTP_201_CREATED)
+
+        except Exception as e:
+            return Response({"Error: ww": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
 # class RegisterOrganisationView(generics.CreateAPIView):
     
 
 
-
 class LoginView(APIView):
+
+    
+    permission_classes = [AllowAny]
+
     """
-    Handles both organization and user login requests and returns refresh and access tokens.
+     handles both organizatio and user
+     login requests
     """
 
+    
     def post(self, request):
-        email = request.data.get('email')
-        password = request.data.get('password')
+        login_serializer = LoginSerializer(data=request.data)
         
-        # Check if the email exists in the Organization model
-        organization = Organization.objects.filter(email=email).first()
-        
-        if organization:
-            user = authenticate(request, email=email, password=password, is_user=False)
-        else:
-            # Check if the email exists in the Users model
-            user = authenticate(request, email=email, password=password, is_user=True)
+        if login_serializer.is_valid(raise_exception=True):
+            email = request.data.get('email')
+            password = request.data.get('password')
 
-        if user:
-            login(request, user)
-            refresh = RefreshToken.for_user(user)
-            return Response({
-                "refresh": str(refresh),
-                "access": str(refresh.access_token)
-            }, status=status.HTTP_200_OK)
-        else:
-            return Response({"message": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
+            if not email or not password:
+                raise AuthenticationFailed('Both email and password is required')
 
+            user = authenticate(email=email, password=password)
+            if user is None:
+                
+                return Response(
+                    {'message':'incorret credentials '}, 
+                    status=status.HTTP_401_UNAUTHORIZED
+                )
+                
+            if not user.is_active:
+                
+                return Response(
+                        {"message": 'user is not active'},
+                        status=status.HTTP_401_UNAUTHORIZED
+                    )
 
+            else:
+                
+                    
+                tokens=create_jwt_pair_for_user(user)
+                    
+                return Response({
+                    "message": " logged in successfully",
+                    "status": 200,
+                    "id": user.id,
+                    "tokens": tokens
+                })
 
-class LogoutView(APIView):
-    """
-    View to logout a user
-    """
-    permission_classes = (IsAuthenticated,)
-
-    def post(self, request):
-        try:
-            refresh_token = request.data.get("refresh_token")
-           
-            token = RefreshToken(refresh_token)
-            token.blacklist()
-            base_response = BaseResponse(None, None, 'Successfully logged out.')
-            return Response(base_response.to_dict(), status=status.HTTP_200_OK)
-        except Exception as e:
-            print(type(str(e)))
-            return abort(400, str(e))
 
 
 
