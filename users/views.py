@@ -8,8 +8,7 @@ from django.shortcuts import get_object_or_404
 
 from .models import Users, OrganizationLunchWallet, OrganizationInvites
 from rest_framework_simplejwt.authentication import JWTAuthentication
-from django.contrib.auth import authenticate
-from django.contrib.auth import authenticate, get_user_model
+from django.contrib.auth import authenticate, get_user_model, login
 from rest_framework import generics, status
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework_simplejwt.exceptions import AuthenticationFailed
@@ -18,28 +17,6 @@ from .utils import *
 
 from .tokens import create_jwt_pair_for_user
 from .utils import EmailManager, generate_token, BaseResponse
-
-class AddBankAccountView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
-
-    def patch(self, request):
-        user = request.user
-        serializer = BankAccountSerializer(user, data=request.data, partial=True)
-
-        if serializer.is_valid():
-            serializer.save()
-            user_data = {
-                "email": user.email,  
-                "bank_number": user.bank_number,  
-                "bank_code": user.bank_code,
-                "bank_name": user.bank_name,
-            }
-            return Response({ 
-                "data": user_data,
-                "message": "Bank account information updated successfully",
-                "code": 200, 
-            }, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 User = get_user_model()
@@ -137,38 +114,36 @@ class RegisterUserView(generics.CreateAPIView):
     
 
 
-# class LoginView(APIView):
-#     """
-#     handles both organization and user
-#     login requests
-#     """
 
-#     permission_classes = [AllowAny]
+class LoginView(APIView):
+    """
+    Handles both organization and user login requests and returns refresh and access tokens.
+    """
 
     def post(self, request):
-        login_serializer = LoginSerializer(data=request.data)
+        email = request.data.get('email')
+        password = request.data.get('password')
+        
+        # Check if the email exists in the Organization model
+        organization = Organization.objects.filter(email=email).first()
+        
+        if organization:
+            user = authenticate(request, email=email, password=password, is_user=False)
+        else:
+            # Check if the email exists in the Users model
+            user = authenticate(request, email=email, password=password, is_user=True)
 
-#         # checks if serializer data is valid
+        if user:
+            login(request, user)
+            refresh = RefreshToken.for_user(user)
+            data = 
+            return Response({
+                "refresh": str(refresh),
+                "access": str(refresh.access_token)
+            }, status=status.HTTP_200_OK)
+        else:
+            return Response({"message": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
 
-#         if login_serializer.is_valid(raise_exception=True):
-#             email = request.data.get("email")
-#             password = request.data.get("password")
-
-            if not email or password:
-                raise AuthenticationFailed("Both emil and password is required")
-
-#             user = authenticate(email=email, password=password)
-#             if user is not None:
-#                 if user.is_active:
-#                     tokens = create_jwt_pair_for_user(user)
-#                     return Response(
-#                         {
-#                             "message": "User authenticated successfully",
-#                             "status": 200,
-#                             "id": user.id,
-#                             "token": tokens,
-#                         }
-#                     )
 
 
 class LogoutView(APIView):
@@ -265,3 +240,27 @@ class UserRetrieveView(generics.RetrieveAPIView):
             "data": serializer.data,
         }
         return Response(response, status=status.HTTP_200_OK)
+
+
+
+class AddBankAccountView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def patch(self, request):
+        user = request.user
+        serializer = BankAccountSerializer(user, data=request.data, partial=True)
+
+        if serializer.is_valid():
+            serializer.save()
+            user_data = {
+                "email": user.email,  
+                "bank_number": user.bank_number,  
+                "bank_code": user.bank_code,
+                "bank_name": user.bank_name,
+            }
+            return Response({ 
+                "data": user_data,
+                "message": "Bank account information updated successfully",
+                "code": 200, 
+            }, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
