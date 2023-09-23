@@ -1,6 +1,8 @@
 from rest_framework import serializers
 from .models import Lunch, Withdrawals
 from users.models import Users
+from users.models import Organization
+
 from django.shortcuts import get_object_or_404
 
 
