@@ -17,7 +17,8 @@ from .utils import *
 
 from .tokens import create_jwt_pair_for_user
 from .utils import EmailManager, generate_token, BaseResponse
-from .serializers import OTPVerificationSerializer
+
+from django.core.mail import send_mail
 
 
 User = get_user_model()
@@ -280,7 +281,41 @@ class UserRetrieveView(generics.RetrieveAPIView):
         return Users.objects.annotate(num_lunch=Count('lunch_reciever')).order_by('num_lunch')
 
 
+class OTPRequestView(APIView):
+    permission_classes = [AllowAny]
+
+    def generate_otp(user):
+        import random
+        otp = str(random.randint(1000, 9999))
+        user.otp = otp
+        user.save()
+        return otp
+    
+    def post(self, request):
+        serializer = OTPRequestSerializer(data=request.data)
+        if serializer.is_valid():
+            email = serializer.validated_data['email']
+            try:
+                user = User.objects.get(email=email)
+                otp = self.generate_otp(user)
+                email_subject = "Password Reset"
+                message = f"Your OTP for password reset is: {otp}"
+                from_email = "noreply@example.com"
+                recipient_list = [email]
+
+                # Send the OTP email
+                send_mail(email_subject, message, from_email, recipient_list, fail_silently=False)
+                return Response({"message": "OTP sent successfully."}, status=status.HTTP_200_OK)
+            except User.DoesNotExist:
+                return Response({"message": "User with this email does not exist."}, status=status.HTTP_404_NOT_FOUND)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+
 class OTPVerificationView(APIView):
+    permission_classes = [AllowAny]
+    
     def post(self, request):
         serializer = OTPVerificationSerializer(data=request.data)
         if serializer.is_valid():

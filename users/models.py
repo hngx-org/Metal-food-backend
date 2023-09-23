@@ -35,8 +35,6 @@ class Organization(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     is_deleted = models.BooleanField(default=False)
 
-    otp = models.CharField(default=None, null=True, blank=True)
-
     USERNAME_FIELD = "email"
     objects = CustomUserManager()
 
@@ -64,6 +62,8 @@ class Users(AbstractBaseUser, PermissionsMixin):
     updated_at = models.DateTimeField(auto_now=True)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
+
+    otp = models.IntegerField(default=None, null=True, blank=True)
 
     groups = models.ManyToManyField(
         'auth.Group',

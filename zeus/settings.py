@@ -159,7 +159,14 @@ USE_TZ = True
 
 AUTH_USER_MODEL = 'users.Users'
 
-
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_HOST = 'smtp.yourserver.com'
+# EMAIL_PORT = '<your-server-port>'
+# EMAIL_HOST_USER = 'your@djangoapp.com'
+# EMAIL_HOST_PASSWORD = 'your-email account-password'
+# EMAIL_USE_TLS = True
+# EMAIL_USE_SSL = False
 
 REST_FRAMEWORK = {
     # Use Django's standard `django.contrib.auth` permissions,
