@@ -92,23 +92,12 @@ WSGI_APPLICATION = 'zeus.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
-
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.mysql',
-#         'NAME': 'free_lunch_test_db',
-#         'USER': 'metal',
-#         'PASSWORD': 'Metal100%',
-#         'HOST': '35.193.20.212',  # Or the hostname where your MySQL server is running
-#         'PORT': '3306',       # MySQL's default port is 3306
-#     }
-# }
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
+}
 
 DATABASES = {
     'default': {
@@ -120,6 +109,17 @@ DATABASES = {
         'PORT': 6002,       # Set to the PostgreSQL server port
     }
 }
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#         'NAME': 'team_metal_db',
+#         'USER': 'team_metal_user',
+#         'PASSWORD': 'SYW9oco2st70Mn6RYcRdrthmt6B3QnLo',
+#         'HOST': 'dpg-ck6t8avsasqs73djrtp0-a.oregon-postgres.render.com',  # Set to the PostgreSQL server host
+#         'PORT': '5432',       # Set to the PostgreSQL server port
+#     }
+# }
 
 
 
@@ -188,7 +188,7 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=10),
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=10),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
     'ROTATE_REFRESH_TOKENS': True,
     'BLACKLIST_AFTER_ROTATION': True,
@@ -203,10 +203,6 @@ SIMPLE_JWT = {
     'TOKEN_TYPE_CLAIM': 'token_type',
 }
 
-
-PASSWORD_HASHERS = [
-    'django.contrib.auth.hashers.BCryptSHA256PasswordHasher',
-]
 
 REST_FRAMEWORK = {
     # Use Django's standard `django.contrib.auth` permissions,
@@ -236,8 +232,8 @@ SPECTACULAR_SETTINGS = {
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 465
-EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
+EMAIL_HOST_USER = 'ddummydum11@gmail.com'
+EMAIL_HOST_PASSWORD = 'uyxgapjpcefhpvmz'
 EMAIL_USE_TLS = False
 EMAIL_USE_SSL = True
 
