@@ -89,12 +89,12 @@ WSGI_APPLICATION = 'zeus.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
 
 # DATABASES = {
 #     'default': {
@@ -107,16 +107,16 @@ DATABASES = {
 #     }
 # }
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-#         'NAME': 'team_metal_db',
-#         'USER': 'team_metal_user',
-#         'PASSWORD': 'SYW9oco2st70Mn6RYcRdrthmt6B3QnLo',
-#         'HOST': 'dpg-ck6t8avsasqs73djrtp0-a.oregon-postgres.render.com',  # Set to the PostgreSQL server host
-#         'PORT': '5432',       # Set to the PostgreSQL server port
-#     }
-# }
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'team_metal_db',
+        'USER': 'team_metal_user',
+        'PASSWORD': 'SYW9oco2st70Mn6RYcRdrthmt6B3QnLo',
+        'HOST': 'dpg-ck6t8avsasqs73djrtp0-a.oregon-postgres.render.com',  # Set to the PostgreSQL server host
+        'PORT': '5432',       # Set to the PostgreSQL server port
+    }
+}
 
 
 
