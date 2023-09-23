@@ -20,6 +20,7 @@ from .models import OrganizationLunchWallet
 
 from .tokens import create_jwt_pair_for_user
 from .utils import EmailManager, generate_token, BaseResponse
+from .serializers import OTPVerificationSerializer
 
 class AddBankAccountView(APIView):
     permission_classes = [permissions.IsAuthenticated]
@@ -274,3 +275,34 @@ class UserLunchDashboard(generics.ListAPIView):
 
     def get_queryset(self):
         return Users.objects.annotate(num_lunch=Count('lunch_reciever')).order_by('num_lunch')
+
+
+class OTPVerificationView(APIView):
+    def post(self, request):
+        serializer = OTPVerificationSerializer(data=request.data)
+        if serializer.is_valid():
+            otp = serializer.validated_data['otp']
+            new_password = serializer.validated_data['new_password']
+            email = serializer.validated_data['email']
+            user = User.objects.get(email=email)
+            if user.otp == otp:
+                user.set_password(new_password)
+                user.save()
+                user.otp = None
+                user.save()
+                return Response({
+                    "message": "success",
+                    "message": "Password Reset Successful",
+                    "status": status.HTTP_202_ACCEPTED,
+                })
+            else:
+                return Response({
+                    "message": "error",
+                    "message": "Invalid OTP",
+                    "status": status.HTTP_400_BAD_REQUEST,
+                })
+        return Response({
+            "message": "error",
+            "error": serializer.errors,
+            "status": status.HTTP_400_BAD_REQUEST,
+        })
