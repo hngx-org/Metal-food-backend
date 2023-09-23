@@ -1,0 +1,613 @@
+openapi: 3.0.3
+info:
+  title: Zeus API
+  version: 1.0.0
+  description: An app for gifting free lunch
+paths:
+  /api/v1/transaction/lunch/all/:
+    get:
+      operationId: api_v1_transaction_lunch_all_list
+      tags:
+      - api
+      security:
+      - tokenAuth: []
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LunchSerializers'
+          description: ''
+  /api/v1/transaction/lunch/history/:
+    get:
+      operationId: api_v1_transaction_lunch_history_list
+      tags:
+      - api
+      security:
+      - tokenAuth: []
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LunchSerializers'
+          description: ''
+  /api/v1/transaction/lunch/redeem/:
+    post:
+      operationId: api_v1_transaction_lunch_redeem_create
+      tags:
+      - api
+      security:
+      - tokenAuth: []
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/transaction/lunch/send/:
+    post:
+      operationId: api_v1_transaction_lunch_send_create
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LaunchSerializerPost'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/LaunchSerializerPost'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/LaunchSerializerPost'
+        required: true
+      security:
+      - tokenAuth: []
+      - basicAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LaunchSerializerPost'
+          description: ''
+  /api/v1/transaction/withdrawal/count/:
+    get:
+      operationId: api_v1_transaction_withdrawal_count_retrieve
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/transaction/withdrawal/request/:
+    post:
+      operationId: api_v1_transaction_withdrawal_request_create
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WithdrawalRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/WithdrawalRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/WithdrawalRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WithdrawalRequest'
+          description: ''
+  /api/v1/user/all/:
+    get:
+      operationId: api_v1_user_all_list
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AllUser'
+          description: ''
+  /api/v1/user/auth/logout:
+    post:
+      operationId: api_v1_user_auth_logout_create
+      description: Handle user logout request
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/user/jwt/create/:
+    post:
+      operationId: api_v1_user_jwt_create_create
+      description: |-
+        Takes a set of user credentials and returns an access and refresh JSON web
+        token pair to prove the authentication of those credentials.
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenObtainPair'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TokenObtainPair'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TokenObtainPair'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenObtainPair'
+          description: ''
+  /api/v1/user/jwt/refresh/:
+    post:
+      operationId: api_v1_user_jwt_refresh_create
+      description: |-
+        Takes a refresh type JSON web token and returns an access type JSON web
+        token if the refresh token is valid.
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenRefresh'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TokenRefresh'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TokenRefresh'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenRefresh'
+          description: ''
+  /api/v1/user/jwt/verify/:
+    post:
+      operationId: api_v1_user_jwt_verify_create
+      description: |-
+        Takes a token and indicates if it is valid.  This view provides no
+        information about a token's fitness for a particular use.
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenVerify'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TokenVerify'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TokenVerify'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenVerify'
+          description: ''
+  /api/v1/user/organization/{org_id}/wallet/update/:
+    patch:
+      operationId: api_v1_user_organization_wallet_update_partial_update
+      description: |-
+        Title: Update Organization launch wallet balance
+        Description: Description: Allows an admin user to update wallet balance.
+
+        Endpoint: /api/<id>/organization/wallet/update
+        Method:PATCH
+      parameters:
+      - in: path
+        name: org_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/user/organization/create/:
+    post:
+      operationId: api_v1_user_organization_create_create
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GetOrganization'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/GetOrganization'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/GetOrganization'
+        required: true
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetOrganization'
+          description: ''
+  /api/v1/user/organization/invite/:
+    post:
+      operationId: api_v1_user_organization_invite_create
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Invite'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Invite'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Invite'
+        required: true
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Invite'
+          description: ''
+  /api/v1/user/organization/staff/signup/:
+    post:
+      operationId: api_v1_user_organization_staff_signup_create
+      description: |-
+        View for handling user registration.
+        This view handles user registration and returns a response with the serialized data of the newly created user.
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Register'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Register'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Register'
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Register'
+          description: ''
+  /api/v1/user/profile/:
+    get:
+      operationId: api_v1_user_profile_retrieve
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+          description: ''
+  /api/v1/user/search/{nameoremail}/:
+    get:
+      operationId: api_v1_user_search_retrieve
+      parameters:
+      - in: path
+        name: nameoremail
+        schema:
+          type: string
+        required: true
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AllUser'
+          description: ''
+  /api/v1/user/user/add-bank-account/:
+    patch:
+      operationId: api_v1_user_user_add_bank_account_partial_update
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+components:
+  schemas:
+    AllUser:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        first_name:
+          type: string
+          maxLength: 255
+        last_name:
+          type: string
+          maxLength: 255
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        profile_picture:
+          type: string
+          format: uri
+          nullable: true
+      required:
+      - email
+      - first_name
+      - id
+      - last_name
+    GetOrganization:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 50
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        lunch_price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        currency:
+          type: string
+          maxLength: 3
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        password:
+          type: string
+          maxLength: 128
+      required:
+      - created_at
+      - email
+      - id
+      - name
+      - password
+    Invite:
+      type: object
+      properties:
+        org_id:
+          type: integer
+        email:
+          type: string
+          format: email
+          maxLength: 254
+      required:
+      - email
+      - org_id
+    LaunchSerializerPost:
+      type: object
+      properties:
+        quantity:
+          type: integer
+        note:
+          type: string
+        receivers:
+          type: array
+          items:
+            type: integer
+      required:
+      - quantity
+      - receivers
+    LunchSerializers:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        quantity:
+          type: integer
+        redeemed:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        note:
+          type: string
+          nullable: true
+        sender_id:
+          type: integer
+        reciever_id:
+          type: integer
+      required:
+      - created_at
+      - id
+      - quantity
+      - reciever_id
+      - sender_id
+    Register:
+      type: object
+      properties:
+        first_name:
+          type: string
+          maxLength: 255
+        last_name:
+          type: string
+          maxLength: 255
+        username:
+          type: string
+          nullable: true
+          maxLength: 100
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        password:
+          type: string
+          writeOnly: true
+          maxLength: 255
+      required:
+      - email
+      - first_name
+      - last_name
+      - password
+    TokenObtainPair:
+      type: object
+      properties:
+        email:
+          type: string
+          writeOnly: true
+        password:
+          type: string
+          writeOnly: true
+        access:
+          type: string
+          readOnly: true
+        refresh:
+          type: string
+          readOnly: true
+      required:
+      - access
+      - email
+      - password
+      - refresh
+    TokenRefresh:
+      type: object
+      properties:
+        access:
+          type: string
+          readOnly: true
+        refresh:
+          type: string
+      required:
+      - access
+      - refresh
+    TokenVerify:
+      type: object
+      properties:
+        token:
+          type: string
+          writeOnly: true
+      required:
+      - token
+    UserProfile:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          readOnly: true
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        profile_picture:
+          type: string
+          readOnly: true
+        isAdmin:
+          type: boolean
+      required:
+      - email
+      - id
+      - isAdmin
+      - name
+      - profile_picture
+    WithdrawalRequest:
+      type: object
+      properties:
+        amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        bank_number:
+          type: string
+          maxLength: 20
+        bank_name:
+          type: string
+          maxLength: 50
+        bank_code:
+          type: string
+          maxLength: 30
+      required:
+      - amount
+      - bank_code
+      - bank_name
+      - bank_number
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: sessionid
+    jwtAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    tokenAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: Token-based authentication with required prefix "Token"
