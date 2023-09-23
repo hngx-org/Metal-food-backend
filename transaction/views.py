@@ -10,6 +10,7 @@ from .serializers import (
     RedeemSerialize,
     WithdrawalRequestSerializer,
     WithdrawalRequestGetSerializer,
+    LunchDetailSerializer,
 )
 from rest_framework.authentication import (
     TokenAuthentication,
@@ -223,3 +224,12 @@ class ListAllLunches(generics.ListAPIView):
     def get_queryset(self):
         queryset = Lunch.objects.all()
         return queryset
+    
+class LunchDetailView(generics.RetrieveAPIView):
+    queryset = Lunch.objects.all()
+    serializer_class = LunchDetailSerializer
+
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data, status=status.HTTP_200_OK)
