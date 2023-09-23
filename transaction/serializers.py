@@ -8,17 +8,20 @@ class LunchSerializers(serializers.ModelSerializer):
     class Meta:
         model = Lunch
 
+
 class WithdrawalRequestSerializer(serializers.Serializer):
     amount = serializers.DecimalField(max_digits=10, decimal_places=2)
     bank_number = serializers.CharField(max_length=20)
     bank_name = serializers.CharField(max_length=50)
     bank_code = serializers.CharField(max_length=30)
 
+
 class WithdrawalRequestGetSerializer(serializers.ModelSerializer):
     class Meta:
-        model= Withdrawals
-        fields = ['pk','status','amount','created_at']
-        
+        model = Withdrawals
+        fields = ['pk', 'status', 'amount', 'created_at']
+
+
 class WithdrawalCountSerializer(serializers.Serializer):
     user_id = serializers.IntegerField()
     withdrawal_count = serializers.IntegerField()
@@ -32,15 +35,20 @@ class LaunchSerializerPost(serializers.Serializer):
     )
 
     def validate_quantity(self, value):
+
         if int(value) < 1:
-            raise serializers.ValidationError("Lunch given should be above 0")
+            raise serializers.ValidationError("No Negative Lunch Transfers")
+
         else:
             return value
 
     def validate(self, data):
+
         sender_Id = self.context["senderId"]
+
         if sender_Id in data["receivers"]:
             raise serializers.ValidationError("You can't send lunch to yourself")
+
         else:
             return data
 

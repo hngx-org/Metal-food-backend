@@ -102,7 +102,7 @@ class RedeemLunchView(APIView):
         serializer = RedeemSerialize(data=request.data)
         if serializer.is_valid(raise_exception=True):
             for lunchId in serializer.validated_data.get("id"):
-                lunch = Lunch.objects.get(id=lunchId)
+                lunch = get_object_or_404(Lunch, id=lunchId)
                 lunch_credit = lunch.quantity
                 lunch.redeemed = True
                 receiver = get_object_or_404(
