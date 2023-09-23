@@ -75,7 +75,7 @@ class EmailManager:
 
 
     @classmethod
-    async def send_mail(
+    def send_mail(
        self,
        subject: str,
        recipients: list[str],
@@ -113,17 +113,6 @@ class EmailManager:
             message=message,
             html_message=html_message,
         )
-            # message = Mail(
-            #     from_email='ddummydum11@gmail.com',
-            #     to_emails=recipients,
-            #     subject=subject,
-            #     html_content=html_message
-            # )
-            # try:
-            #     sg = SendGridAPIClient(os.environ.get('SENDGRID_API_KEY'))
-            #     response = sg.send(message)
-            #     print(response.status_code)
-            #     print(response.body)
-            #     print(response.header)
+
         except Exception as error:
             Logger.log(msg=error, level=logging.ERROR)
