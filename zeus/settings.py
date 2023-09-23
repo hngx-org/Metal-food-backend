@@ -52,6 +52,9 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt.token_blacklist',
     'users',
     'transaction',
+    'cloudinary_storage',
+    'cloudinary',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
@@ -110,11 +113,11 @@ WSGI_APPLICATION = 'zeus.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'team_metal_db',
-        'USER': 'team_metal_user',
-        'PASSWORD': 'SYW9oco2st70Mn6RYcRdrthmt6B3QnLo',
-        'HOST': 'dpg-ck6t8avsasqs73djrtp0-a.oregon-postgres.render.com',  # Set to the PostgreSQL server host
-        'PORT': '5432',       # Set to the PostgreSQL server port
+        'NAME': 'railway',
+        'USER': 'postgres',
+        'PASSWORD': 'NzFgveN56GmNmF0RKbWL',
+        'HOST': 'containers-us-west-102.railway.app',  # Set to the PostgreSQL server host
+        'PORT': 6002,       # Set to the PostgreSQL server port
     }
 }
 
@@ -246,3 +249,15 @@ PHONENUMBER_DB_FORMAT = "INTERNATIONAL"
 PHONENUMBER_DEFAULT_REGION = "NG"
 
 PHONENUMBER_DEFAULT_FORMAT = "INTERNATIONAL"
+
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': 'dxtugxga0',
+    'API_KEY': '543117893666395',
+    'API_SECRET': 'tM_FoHWflp_uBEIN2z00Wqb-q4k',
+    'MEDIA_TAG': 'zeus-media',
+    'PREFIX': 'zeus/media',
+}
+
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+
+CORS_ALLOW_ALL_ORIGINS = True
