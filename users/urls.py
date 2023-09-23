@@ -22,4 +22,5 @@ urlpatterns = [
     path('profile/', UserRetrieveView.as_view(), name="retrieve-user"),
     path('lunch/leaderboard/', UserLunchDashboard.as_view(), name='leaderboard'),
     path('otp-verification/', OTPVerificationView.as_view(), name='otp-verification'),
+    path('reset-password/', reset_password, name='reset_password'),
 ]

@@ -306,3 +306,11 @@ class OTPVerificationView(APIView):
             "error": serializer.errors,
             "status": status.HTTP_400_BAD_REQUEST,
         })
+
+
+def reset_password(request):
+    user = request.user
+    generate_otp(user=user, email=user.email)
+    send_email(email=user.email)
+
+    return JsonResponse({"Message":'email sent successfully'})
