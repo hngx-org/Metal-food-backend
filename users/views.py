@@ -8,7 +8,11 @@ from django.shortcuts import get_object_or_404
 
 from .models import Users, OrganizationLunchWallet, OrganizationInvites
 from rest_framework_simplejwt.authentication import JWTAuthentication
+<<<<<<< HEAD
 from django.contrib.auth import authenticate, get_user_model, login
+=======
+from django.contrib.auth import get_user_model
+>>>>>>> 5c724e48eb989633ffb9ee6a0d47d6c630d28e15
 from rest_framework import generics, status
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework_simplejwt.exceptions import AuthenticationFailed
@@ -17,9 +21,14 @@ from .utils import *
 
 from .tokens import create_jwt_pair_for_user
 from .utils import EmailManager, generate_token, BaseResponse
+from .backends import CustomUserBackend
 
 
 User = get_user_model()
+
+# Do not use `User` from `get_user_model()` above with `authenticate` below
+# Where User or Oganization model is needed for authetication, import directly form `users.models`
+authenticate = CustomUserBackend.authenticate
 
 
 class OrganizationCreateAPIView(generics.CreateAPIView):
@@ -37,7 +46,7 @@ class OrganizationCreateAPIView(generics.CreateAPIView):
             'lunch_price':org.lunch_price,
             'currency':org.currency,
             'created_at':org.created_at,
-            # 'password':org.password
+            'password':org.password
         }
         res = {
             "message": "Organization created successfully!",
@@ -143,6 +152,7 @@ class LoginView(APIView):
             }, status=status.HTTP_200_OK)
         else:
             return Response({"message": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
+
 
 
 

@@ -156,6 +156,10 @@ USE_TZ = True
 
 AUTH_USER_MODEL = 'users.Users'
 
+AUTHENTICATION_BACKENDS = [
+    'users.backends.CustomUserBackend',
+]
+
 REST_FRAMEWORK = {
     # Use Django's standard `django.contrib.auth` permissions,
     # or allow read-only access for unauthenticated users.
@@ -193,10 +197,6 @@ SIMPLE_JWT = {
 }
 
 
-PASSWORD_HASHERS = [
-    'django.contrib.auth.hashers.BCryptSHA256PasswordHasher',
-]
-
 REST_FRAMEWORK = {
     # Use Django's standard `django.contrib.auth` permissions,
     # or allow read-only access for unauthenticated users.
@@ -225,8 +225,8 @@ SPECTACULAR_SETTINGS = {
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 465
-EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
+EMAIL_HOST_USER = 'ddummydum11@gmail.com'
+EMAIL_HOST_PASSWORD = 'uyxgapjpcefhpvmz'
 EMAIL_USE_TLS = False
 EMAIL_USE_SSL = True
 
