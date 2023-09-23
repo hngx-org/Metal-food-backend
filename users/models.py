@@ -1,7 +1,7 @@
 from django.db import models
 
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin, AbstractUser
-from django.db import models
+from phonenumber_field.modelfields import PhoneNumberField
 from django.utils import timezone
 
 
@@ -29,6 +29,7 @@ class CustomUserManager(BaseUserManager):
 class Organization(AbstractBaseUser, PermissionsMixin):
     name = models.CharField(max_length=50, unique=True, null=False)
     email = models.EmailField(unique=True, null=False, blank=False)
+    
     lunch_price = models.DecimalField(max_digits=10, decimal_places=2, default=1000.00)
     currency = models.CharField(max_length=3, default='NGN')
     created_at = models.DateTimeField(auto_now_add=True)
@@ -42,15 +43,14 @@ class Organization(AbstractBaseUser, PermissionsMixin):
         return self.name
 
 
-
 class Users(AbstractBaseUser, PermissionsMixin):
     org = models.ForeignKey(Organization, on_delete=models.CASCADE, null=True)
     first_name = models.CharField(max_length=255)
     last_name = models.CharField(max_length=255)
     email = models.EmailField(unique=True, null=False, blank=False)
-    username = models.CharField(unique=True, max_length=100, null=False, blank=False)
+    username = models.CharField(unique=True, max_length=100, null=True, blank=True)
     password = models.CharField(max_length=255, null=False, blank=False)
-    phone_number = models.CharField(max_length=15)
+    phone_number = PhoneNumberField(null=True, blank=True, unique=True)
     profile_picture = models.ImageField(upload_to='profile_image/', null=True)
     refresh_token = models.CharField(max_length=255, null=True)
     bank_number = models.CharField(max_length=20, null=True)
@@ -99,17 +99,7 @@ class OrganizationInvites(models.Model):
     def __str__(self) -> str:
         return str(self.id)
 
-    # def is_expired(self):
-    #     """Checks if the invite token has expired"""
-    #     return self.TTL < timezone.now()
-
-    # def get_remaining_time(self):
-    #     """Get the remaining time until expiration."""
-    #     if not self.is_expired():
-    #         remaining_time = self.TTL - timezone.now()
-    #         return remaining_time.total_seconds()
-    #     return None
-
+   
 class OrganizationLunchWallet(models.Model):
     org_id = models.ForeignKey(Organization, on_delete=models.CASCADE)
     balance = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
