@@ -145,14 +145,12 @@ class LoginView(APIView):
         if user:
             login(request, user)
             refresh = RefreshToken.for_user(user)
-            data = 
             return Response({
                 "refresh": str(refresh),
                 "access": str(refresh.access_token)
             }, status=status.HTTP_200_OK)
         else:
             return Response({"message": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
-
 
 
 

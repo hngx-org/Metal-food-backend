@@ -161,4 +161,4 @@ class LunchWalletSerializer(ModelSerializer):
 class AllUserSerializer(ModelSerializer):
     class Meta:
         model = Users
-        fields = ('id', 'first_name', 'last_name', 'email', 'profile_picture')
+        fields = ('id', 'first_name', 'last_name', 'email', 'profile_picture', 'lunch_credit_balance')
