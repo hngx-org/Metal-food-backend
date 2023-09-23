@@ -79,9 +79,9 @@ class EmailManager:
        self,
        subject: str,
        recipients: list[str],
-       context: dict[str, Any] | None,
-       template_name: str | None,
-       message: str | None = None,
+       context: dict[str, Any] or None,
+       template_name: str or None,
+       message: str or None = None,
        ) -> None:
         """Send email to invited user's email."""
         if (context and template_name is None) or (template_name and context is None):

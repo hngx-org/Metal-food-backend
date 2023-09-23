@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework import generics, status
 from rest_framework import permissions
 from .serializers import *
-from django.db.models import Q
+from django.db.models import Q, Count
 from django.shortcuts import get_object_or_404
 
 from .models import Users, OrganizationLunchWallet, OrganizationInvites
@@ -14,6 +14,8 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework_simplejwt.exceptions import AuthenticationFailed
 from rest_framework_simplejwt.tokens import RefreshToken
 from .utils import *
+from .serializers import LunchWalletSerializer
+from .models import OrganizationLunchWallet
 
 from .tokens import create_jwt_pair_for_user
 from .utils import EmailManager, generate_token, BaseResponse
@@ -149,8 +151,8 @@ class RegisterUserView(generics.CreateAPIView):
 
 #     permission_classes = [AllowAny]
 
-    def post(self, request):
-        login_serializer = LoginSerializer(data=request.data)
+    # def post(self, request):
+    #     login_serializer = LoginSerializer(data=request.data)
 
 #         # checks if serializer data is valid
 
@@ -269,3 +271,10 @@ class UserRetrieveView(generics.RetrieveAPIView):
             "data": serializer.data,
         }
         return Response(response, status=status.HTTP_200_OK)
+
+class UserLunchDashboard(generics.ListAPIView):
+    permission_classes = [AllowAny]
+    serializer_class = AllUserSerializer
+
+    def get_queryset(self):
+        return Users.objects.annotate(num_lunch=Count('lunch_reciever')).order_by('num_lunch')
