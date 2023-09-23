@@ -55,3 +55,8 @@ class RedeemSerialize(serializers.Serializer):
             if lunch.redeemed == True:
                 raise serializers.ValidationError("Lunch already redeemed")
         return data
+
+class LunchDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Lunch
+        fields = '__all__'
