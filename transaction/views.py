@@ -229,14 +229,14 @@ from rest_framework.response import Response
 from rest_framework import generics
 from rest_framework.authentication import TokenAuthentication, BasicAuthentication, SessionAuthentication
 from rest_framework.permissions import IsAuthenticated
-from .models import Lunches
+from .models import Lunch
 from users.models import Organization
 
 # Create your views here.
 
 
 class GetALunch(generics.RetrieveAPIView):
-    queryset = Lunches.objects.all()
+    queryset = Lunch.objects.all()
     lookup_field = 'pk'
     permission_classes = [IsAuthenticated]
     authentication_classes = [TokenAuthentication, BasicAuthentication, SessionAuthentication]
@@ -244,8 +244,8 @@ class GetALunch(generics.RetrieveAPIView):
     def get(self, request, *args, **kwargs):
         lunch_id = kwargs.get('pk')
         try:
-            lunch = Lunches.objects.get(id= lunch_id)
-        except Lunches.DoesNotExist:
+            lunch = Lunch.objects.get(id= lunch_id)
+        except Lunch.DoesNotExist:
             lunch = None
             return Response({'message': 'Lunch does not exist'})
         
