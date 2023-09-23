@@ -23,3 +23,5 @@ urlpatterns = [
     path('lunch/leaderboard/', UserLunchDashboard.as_view(), name='leaderboard'),
     path('otp-verification/', OTPVerificationView.as_view(), name='otp-verification'),
 ]
+
+
