@@ -72,7 +72,7 @@ class UserSerializer(serializers.ModelSerializer):
 class BankAccountSerializer(serializers.ModelSerializer):
     class Meta:
         model = Users
-        fields = ['bank_number', 'bank_code', 'bank_name']
+        fields = ['email', 'bank_number', 'bank_code', 'bank_name']
         
 
 class RegisterSerializer(serializers.ModelSerializer):
