@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework import generics, status
 from rest_framework import permissions
 from .serializers import *
-from django.db.models import Q
+from django.db.models import Q, Count
 from django.shortcuts import get_object_or_404
 
 from .models import Users, OrganizationLunchWallet, OrganizationInvites
@@ -145,8 +145,8 @@ class RegisterUserView(generics.CreateAPIView):
 
 #     permission_classes = [AllowAny]
 
-    def post(self, request):
-        login_serializer = LoginSerializer(data=request.data)
+    # def post(self, request):
+    #     login_serializer = LoginSerializer(data=request.data)
 
 #         # checks if serializer data is valid
 
@@ -154,8 +154,8 @@ class RegisterUserView(generics.CreateAPIView):
 #             email = request.data.get("email")
 #             password = request.data.get("password")
 
-            if not email or password:
-                raise AuthenticationFailed("Both emil and password is required")
+            # if not email or password:
+            #     raise AuthenticationFailed("Both emil and password is required")
 
 #             user = authenticate(email=email, password=password)
 #             if user is not None:
@@ -265,3 +265,10 @@ class UserRetrieveView(generics.RetrieveAPIView):
             "data": serializer.data,
         }
         return Response(response, status=status.HTTP_200_OK)
+
+class UserLunchDashboard(generics.ListAPIView):
+    permission_classes = [AllowAny]
+    serializer_class = AllUserSerializer
+
+    def get_queryset(self):
+        return Users.objects.annotate(num_lunch=Count('lunch_reciever')).order_by('num_lunch')
