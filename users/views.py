@@ -21,6 +21,7 @@ from .models import OrganizationLunchWallet
 from .tokens import create_jwt_pair_for_user
 from .utils import EmailManager, generate_token, BaseResponse
 from .serializers import OTPVerificationSerializer
+from .generate_otp import *
 
 class AddBankAccountView(APIView):
     permission_classes = [permissions.IsAuthenticated]
