@@ -325,7 +325,7 @@ class UserLunchDashboard(generics.ListAPIView):
 class OTPRequestView(APIView):
     permission_classes = [AllowAny]
 
-    def generate_otp(user):
+    def generate_otp(self, user):
         import random
         otp = str(random.randint(1000, 9999))
         user.otp = otp
