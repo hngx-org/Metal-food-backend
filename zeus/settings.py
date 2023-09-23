@@ -52,6 +52,9 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt.token_blacklist',
     'users',
     'transaction',
+    'cloudinary_storage',
+    'cloudinary',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
@@ -92,6 +95,20 @@ WSGI_APPLICATION = 'zeus.wsgi.application'
 
 
 
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'railway',
+        'USER': 'postgres',
+        'PASSWORD': 'NzFgveN56GmNmF0RKbWL',
+        'HOST': 'containers-us-west-102.railway.app',  # Set to the PostgreSQL server host
+        'PORT': 6002,       # Set to the PostgreSQL server port
+    }
+}
+
+
+
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
 
@@ -127,6 +144,14 @@ USE_I18N = True
 USE_TZ = True
 
 AUTH_USER_MODEL = 'users.Users'
+
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'hngx16720@gmail.com'
+EMAIL_HOST_PASSWORD = 'qbnjqgvfagbnkqpw'
+EMAIL_USE_TLS = True
 
 REST_FRAMEWORK = {
     # Use Django's standard `django.contrib.auth` permissions,
@@ -218,3 +243,15 @@ PHONENUMBER_DB_FORMAT = "INTERNATIONAL"
 PHONENUMBER_DEFAULT_REGION = "NG"
 
 PHONENUMBER_DEFAULT_FORMAT = "INTERNATIONAL"
+
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': 'dxtugxga0',
+    'API_KEY': '543117893666395',
+    'API_SECRET': 'tM_FoHWflp_uBEIN2z00Wqb-q4k',
+    'MEDIA_TAG': 'zeus-media',
+    'PREFIX': 'zeus/media',
+}
+
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+
+CORS_ALLOW_ALL_ORIGINS = True

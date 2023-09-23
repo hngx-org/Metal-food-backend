@@ -65,6 +65,8 @@ class Users(AbstractBaseUser, PermissionsMixin):
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
 
+    otp = models.IntegerField(default=None, null=True, blank=True)
+
     groups = models.ManyToManyField(
         'auth.Group',
         blank=True,

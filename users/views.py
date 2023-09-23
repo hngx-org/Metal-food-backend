@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework import generics, status
 from rest_framework import permissions
 from .serializers import *
-from django.db.models import Q
+from django.db.models import Q, Count
 from django.shortcuts import get_object_or_404
 from rest_framework.authentication import TokenAuthentication
 from .models import Users, OrganizationLunchWallet, OrganizationInvites
@@ -14,10 +14,14 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework_simplejwt.exceptions import AuthenticationFailed
 from rest_framework_simplejwt.tokens import RefreshToken
 from .utils import *
+from .serializers import LunchWalletSerializer
+from .models import OrganizationLunchWallet
 
 from .tokens import create_jwt_pair_for_user
 from .utils import EmailManager, generate_token, BaseResponse
 from .backends import CustomUserBackend
+
+from django.core.mail import send_mail
 
 class AddBankAccountView(APIView):
     permission_classes = [permissions.IsAuthenticated]
@@ -271,3 +275,75 @@ class UserRetrieveView(generics.RetrieveAPIView):
             "data": serializer.data,
         }
         return Response(response, status=status.HTTP_200_OK)
+
+class UserLunchDashboard(generics.ListAPIView):
+    permission_classes = [AllowAny]
+    serializer_class = AllUserSerializer
+
+    def get_queryset(self):
+        return Users.objects.annotate(num_lunch=Count('lunch_reciever')).order_by('num_lunch')
+
+
+class OTPRequestView(APIView):
+    permission_classes = [AllowAny]
+
+    def generate_otp(user):
+        import random
+        otp = str(random.randint(1000, 9999))
+        user.otp = otp
+        user.save()
+        return otp
+    
+    def post(self, request):
+        serializer = OTPRequestSerializer(data=request.data)
+        if serializer.is_valid():
+            email = serializer.validated_data['email']
+            try:
+                user = User.objects.get(email=email)
+                otp = self.generate_otp(user)
+                email_subject = "Password Reset"
+                message = f"Your OTP for password reset is: {otp}"
+                from_email = "noreply@example.com"
+                recipient_list = [email]
+
+                # Send the OTP email
+                send_mail(email_subject, message, from_email, recipient_list, fail_silently=False)
+                return Response({"message": "OTP sent successfully."}, status=status.HTTP_200_OK)
+            except User.DoesNotExist:
+                return Response({"message": "User with this email does not exist."}, status=status.HTTP_404_NOT_FOUND)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+
+class OTPVerificationView(APIView):
+    permission_classes = [AllowAny]
+    
+    def post(self, request):
+        serializer = OTPVerificationSerializer(data=request.data)
+        if serializer.is_valid():
+            otp = serializer.validated_data['otp']
+            new_password = serializer.validated_data['new_password']
+            email = serializer.validated_data['email']
+            user = User.objects.get(email=email)
+            if user.otp == otp:
+                user.set_password(new_password)
+                user.save()
+                user.otp = None
+                user.save()
+                return Response({
+                    "message": "success",
+                    "message": "Password Reset Successful",
+                    "status": status.HTTP_202_ACCEPTED,
+                })
+            else:
+                return Response({
+                    "message": "error",
+                    "message": "Invalid OTP",
+                    "status": status.HTTP_400_BAD_REQUEST,
+                })
+        return Response({
+            "message": "error",
+            "error": serializer.errors,
+            "status": status.HTTP_400_BAD_REQUEST,
+        })
