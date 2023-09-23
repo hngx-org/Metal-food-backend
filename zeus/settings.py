@@ -89,12 +89,7 @@ WSGI_APPLICATION = 'zeus.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
+
 
 
 # Password validation
@@ -152,6 +147,17 @@ REST_FRAMEWORK = {
     #  'DEFAULT_AUTHENTICATION_CLASSES': (
     #      'rest_framework_simplejwt.authentication.JWTAuthentication',
     #  )
+}
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'railway',
+        'USER': 'postgres',
+        'PASSWORD': 'NzFgveN56GmNmF0RKbWL',
+        'HOST': 'containers-us-west-102.railway.app',  # Set to the PostgreSQL server host
+        'PORT': 6002,       # Set to the PostgreSQL server port
+    }
 }
 
 SIMPLE_JWT = {
