@@ -7,7 +7,7 @@ from django.db.models import Q
 from django.shortcuts import get_object_or_404
 
 from .models import Users, OrganizationLunchWallet, OrganizationInvites
-
+from rest_framework_simplejwt.authentication import JWTAuthentication
 from django.contrib.auth import authenticate
 from django.contrib.auth import authenticate, get_user_model
 from rest_framework import generics, status
@@ -137,39 +137,38 @@ class RegisterUserView(generics.CreateAPIView):
     
 
 
-class LoginView(APIView):
-    """
-    handles both organization and user
-    login requests
-    """
+# class LoginView(APIView):
+#     """
+#     handles both organization and user
+#     login requests
+#     """
 
-    permission_classes = [AllowAny]
+#     permission_classes = [AllowAny]
 
     def post(self, request):
-        permission_classes = [AllowAny]
         login_serializer = LoginSerializer(data=request.data)
 
-        # checks if serializer data is valid
+#         # checks if serializer data is valid
 
-        if login_serializer.is_valid(raise_exception=True):
-            email = request.data.get("email")
-            password = request.data.get("password")
+#         if login_serializer.is_valid(raise_exception=True):
+#             email = request.data.get("email")
+#             password = request.data.get("password")
 
-            # if not email or password:
-            #     raise AuthenticationFailed("Both emil and password is required")
+            if not email or password:
+                raise AuthenticationFailed("Both emil and password is required")
 
-            user = authenticate(email=email, password=password)
-            if user is not None:
-                if user.is_active:
-                    tokens = create_jwt_pair_for_user(user)
-                    return Response(
-                        {
-                            "message": "User authenticated successfully",
-                            "status": 200,
-                            "id": user.id,
-                            "token": tokens,
-                        }
-                    )
+#             user = authenticate(email=email, password=password)
+#             if user is not None:
+#                 if user.is_active:
+#                     tokens = create_jwt_pair_for_user(user)
+#                     return Response(
+#                         {
+#                             "message": "User authenticated successfully",
+#                             "status": 200,
+#                             "id": user.id,
+#                             "token": tokens,
+#                         }
+#                     )
 
 
 class LogoutView(APIView):
@@ -216,8 +215,10 @@ class UpdateOrganizationLunchWallet(APIView):
 
 
 class ListUsersView(generics.ListAPIView):
+
     queryset = Users.objects.all()
     serializer_class = AllUserSerializer
+    # authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
 
 
