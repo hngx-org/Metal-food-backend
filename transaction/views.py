@@ -9,6 +9,7 @@ from .serializers import (
     LaunchSerializerPost,
     RedeemSerialize,
     WithdrawalRequestSerializer,
+    WithdrawalRequestGetSerializer,
 )
 from rest_framework.authentication import (
     TokenAuthentication,
@@ -57,11 +58,6 @@ class WithdrawalCountView(generics.RetrieveAPIView):
 
 class SendLunchView(generics.CreateAPIView):
     serializer_class = LaunchSerializerPost
-    authentication_classes = [
-        TokenAuthentication,
-        BasicAuthentication,
-        SessionAuthentication,
-    ]
     queryset = Lunch.objects.all()
     permission_classes = [IsAuthenticated]
 
@@ -75,15 +71,20 @@ class SendLunchView(generics.CreateAPIView):
             senderId = Users.objects.get(id=request.user.id)
             note = serializer.validated_data.get("note")
             quantity = serializer.validated_data.get("quantity")
+
+            ids = []
             for receiver_Id in serializer.validated_data.get("receivers"):
-                Lunch.objects.create(
+                lunchId = Lunch.objects.create(
                     sender_id=senderId,
                     reciever_id=receiver_Id,
                     quantity=quantity,
                     note=note,
                 )
+                ids.append(lunchId.id)
             return Response(
-                {"message": "Lunch request created successfully", "data": {}},
+                {"message": "Lunch request created successfully", "data": {
+                    "lunchIds": ids
+                }},
                 status=status.HTTP_201_CREATED,
             )
         else:
@@ -91,27 +92,27 @@ class SendLunchView(generics.CreateAPIView):
 
 
 class RedeemLunchView(APIView):
-    authentication_classes = [
-        TokenAuthentication,
-        BasicAuthentication,
-        SessionAuthentication,
-    ]
     permission_classes = [IsAuthenticated]
 
     def post(self, request, *args, **kwargs):
         serializer = RedeemSerialize(data=request.data)
         if serializer.is_valid(raise_exception=True):
+            lunch_list = []
             for lunchId in serializer.validated_data.get("id"):
-                lunch = Lunch.objects.get(id=lunchId)
+                lunch_data = {}
+                lunch = get_object_or_404(Lunch, id=lunchId)
                 lunch_credit = lunch.quantity
                 lunch.redeemed = True
                 receiver = get_object_or_404(
-                    Users, first_name=lunch.reciever_id.first_name
+                    Users, id=lunch.reciever_id.id
                 )
                 receiver.lunch_credit_balance += lunch_credit
+                lunch_data["first_name"] = receiver.first_name
+                lunch_data["lunch_credit_balance"] = receiver.lunch_credit_balance
+                lunch_list.append(lunch_data)
                 lunch.save()
                 receiver.save()
-            return Response({"message": "success", "statusCode": 200, "data": "null"})
+            return Response({"message": "Lunch redeemed successfully", "statusCode": 200, "data": lunch_list})
 
 
 class WithdrawalRequestCreateView(generics.CreateAPIView):
@@ -143,6 +144,76 @@ class WithdrawalRequestCreateView(generics.CreateAPIView):
             }
 
             return Response(response_data, status=status.HTTP_201_CREATED)
+
+
+class WithdrawalRequestListView(generics.ListAPIView):
+    serializer_class = WithdrawalRequestGetSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        user = request.user
+
+        if user is not None:
+            try:
+                user_id = Users.objects.get(id=user.id)
+            except Users.DoesNotExist():
+                response = {
+                    "message": "User not found",
+                    "statusCode": status.HTTP_404_NOT_FOUND,
+                }
+                return Response(response, status=status.HTTP_404_NOT_FOUND)
+            queryset = Withdrawals.objects.all()
+            serializer = WithdrawalRequestGetSerializer
+            data = serializer(queryset, many=True).data
+
+            response = {
+                "message": "Withdrawal request retrieved successfully",
+                "statusCode": status.HTTP_200_OK,
+                "data": data,
+            }
+            return Response(response, status=status.HTTP_200_OK)
+
+        else:
+            response = {
+                "message": "Used ID is required",
+                "statusCode": status.HTTP_400_BAD_REQUEST,
+            }
+            return Response(response, status=status.HTTP_400_BAD_REQUEST)
+
+
+class WithdrawalRequestRetrieveView(generics.ListAPIView):
+    serializer_class = WithdrawalRequestGetSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, pk=None, *args, **kwargs):
+        user = request.user
+
+        if user is not None:
+            try:
+                user_id = Users.objects.get(id=user.id)
+            except Users.DoesNotExist():
+                response = {
+                    "message": "User not found",
+                    "statusCode": status.HTTP_404_NOT_FOUND,
+                }
+                return Response(response, status=status.HTTP_404_NOT_FOUND)
+
+            if pk is not None:
+                queryset = Withdrawals.objects.get(id=pk)
+                data = WithdrawalRequestGetSerializer(queryset, many=False).data
+                response = {
+                    "message": "Withdrawal request retrieved successfully",
+                    "statusCode": status.HTTP_200_OK,
+                    "data": data,
+                }
+                return Response(response, status=status.HTTP_200_OK)
+
+        else:
+            response = {
+                "message": "Used ID is required",
+                "statusCode": status.HTTP_400_BAD_REQUEST,
+            }
+            return Response(response, status=status.HTTP_400_BAD_REQUEST)
 
 
 class ListAllLunches(generics.ListAPIView):

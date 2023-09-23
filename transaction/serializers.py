@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Lunch
+from .models import Lunch, Withdrawals
 from users.models import Users
 from django.shortcuts import get_object_or_404
 
@@ -15,7 +15,11 @@ class WithdrawalRequestSerializer(serializers.Serializer):
     bank_name = serializers.CharField(max_length=50)
     bank_code = serializers.CharField(max_length=30)
 
-
+class WithdrawalRequestGetSerializer(serializers.ModelSerializer):
+    class Meta:
+        model= Withdrawals
+        fields = ['pk','status','amount','created_at']
+        
 class WithdrawalCountSerializer(serializers.Serializer):
     user_id = serializers.IntegerField()
     withdrawal_count = serializers.IntegerField()

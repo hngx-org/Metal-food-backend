@@ -9,4 +9,6 @@ urlpatterns = [
    path('lunch/send/',SendLunchView.as_view(),name='send-lunch'),
    path('lunch/redeem/',RedeemLunchView.as_view(),name='redeem-lunch'),
    path('lunch/all/', ListAllLunches.as_view(), name='list-all-lunches'),
+   path('withdrawal/get', views.WithdrawalRequestListView.as_view(), name="withdrawal_request_get_by_user"),
+   path('withdrawal/get/<int:pk>', views.WithdrawalRequestRetrieveView.as_view(), name="withdrawal_request_detail_get_by_user"),
 ]
