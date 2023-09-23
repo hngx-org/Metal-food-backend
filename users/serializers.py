@@ -162,3 +162,8 @@ class AllUserSerializer(ModelSerializer):
     class Meta:
         model = Users
         fields = ('id', 'first_name', 'last_name', 'email', 'profile_picture', 'lunch_credit_balance')
+
+class OTPVerificationSerializer(serializers.Serializer):
+    otp = serializers.CharField(max_length=4)
+    new_password = serializers.CharField(write_only=True)
+    email = serializers.EmailField(max_length=256)

@@ -21,4 +21,5 @@ urlpatterns = [
     path('search/<str:nameoremail>/', SearchUserView.as_view(), name='search-user'),
     path('profile/', UserRetrieveView.as_view(), name="retrieve-user"),
     path('lunch/leaderboard/', UserLunchDashboard.as_view(), name='leaderboard'),
+    path('otp-verification/', OTPVerificationView.as_view(), name='otp-verification'),
 ]
