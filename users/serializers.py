@@ -109,9 +109,9 @@ class UserProfileSerializer(serializers.ModelSerializer):
         model = User
         fields = ["id", "name", "email", "profile_picture", "isAdmin"]
         
-    def get_name(self, obj):
-        """Joins first_name and last_name to get name"""
-        return f"{obj.first_name} {obj.last_name}"
+    # def get_name(self, obj):
+    #     """Joins first_name and last_name to get name"""
+    #     return f"{obj.first_name} {obj.last_name}"
     
     def get_profile_picture(self, obj):
         if obj.profile_picture:
@@ -127,11 +127,11 @@ class UserGetSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Users
-        fields = ["name", "email", "profile_picture", "user_id"]
+        fields = ["full_name", "email", "profile_picture", "user_id"]
         
-    def get_name(self, obj):
-        """Joins first_name and last_name to get name"""
-        return f"{obj.first_name} {obj.last_name}"
+    # def get_name(self, obj):
+    #     """Joins first_name and last_name to get name"""
+    #     return f"{obj.first_name} {obj.last_name}"
     
     def get_profile_picture(self, obj):
         if obj.profile_picture:
@@ -147,4 +147,9 @@ class LunchWalletSerializer(ModelSerializer):
 class AllUserSerializer(ModelSerializer):
     class Meta:
         model = Users
-        fields = ('id', 'first_name', 'last_name', 'email', 'profile_picture')
+        fields = ('id', 'full_name', 'email', 'profile_picture', 'lunch_credit_balance')
+
+class OTPVerificationSerializer(serializers.Serializer):
+    otp = serializers.CharField(max_length=4)
+    new_password = serializers.CharField(write_only=True)
+    email = serializers.EmailField(max_length=256)

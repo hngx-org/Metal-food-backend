@@ -35,6 +35,15 @@ class Organization(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     is_deleted = models.BooleanField(default=False)
 
+    otp = models.CharField(default=None, null=True, blank=True)
+
+    USERNAME_FIELD = "email"
+    objects = CustomUserManager()
+
+    def __str__(self):
+        return self.name
+
+
 class Users(AbstractBaseUser, PermissionsMixin):
     org = models.ForeignKey(Organization, on_delete=models.CASCADE, null=True)
     full_name = models.CharField(max_length=255)

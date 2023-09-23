@@ -17,6 +17,7 @@ from .utils import *
 
 from .tokens import create_jwt_pair_for_user
 from .utils import EmailManager, generate_token, BaseResponse
+from .serializers import OTPVerificationSerializer
 
 
 User = get_user_model()
@@ -275,25 +276,36 @@ class UserRetrieveView(generics.RetrieveAPIView):
         return Response(response, status=status.HTTP_200_OK)
 
 
+    def get_queryset(self):
+        return Users.objects.annotate(num_lunch=Count('lunch_reciever')).order_by('num_lunch')
 
-class AddBankAccountView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
 
-    def patch(self, request):
-        user = request.user
-        serializer = BankAccountSerializer(user, data=request.data, partial=True)
-
+class OTPVerificationView(APIView):
+    def post(self, request):
+        serializer = OTPVerificationSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save()
-            user_data = {
-                "email": user.email,  
-                "bank_number": user.bank_number,  
-                "bank_code": user.bank_code,
-                "bank_name": user.bank_name,
-            }
-            return Response({ 
-                "data": user_data,
-                "message": "Bank account information updated successfully",
-                "code": 200, 
-            }, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            otp = serializer.validated_data['otp']
+            new_password = serializer.validated_data['new_password']
+            email = serializer.validated_data['email']
+            user = User.objects.get(email=email)
+            if user.otp == otp:
+                user.set_password(new_password)
+                user.save()
+                user.otp = None
+                user.save()
+                return Response({
+                    "message": "success",
+                    "message": "Password Reset Successful",
+                    "status": status.HTTP_202_ACCEPTED,
+                })
+            else:
+                return Response({
+                    "message": "error",
+                    "message": "Invalid OTP",
+                    "status": status.HTTP_400_BAD_REQUEST,
+                })
+        return Response({
+            "message": "error",
+            "error": serializer.errors,
+            "status": status.HTTP_400_BAD_REQUEST,
+        })
