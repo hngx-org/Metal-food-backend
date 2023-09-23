@@ -20,4 +20,5 @@ urlpatterns = [
     path('all/', ListUsersView.as_view(), name='list-users'),
     path('search/<str:nameoremail>/', SearchUserView.as_view(), name='search-user'),
     path('profile/', UserRetrieveView.as_view(), name="retrieve-user"),
+    path('lunch/leaderboard/', UserLunchDashboard.as_view(), name='leaderboard'),
 ]
