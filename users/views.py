@@ -5,11 +5,10 @@ from rest_framework import permissions
 from .serializers import *
 from django.db.models import Q, Count
 from django.shortcuts import get_object_or_404
-
+from rest_framework.authentication import TokenAuthentication
 from .models import Users, OrganizationLunchWallet, OrganizationInvites
 from rest_framework_simplejwt.authentication import JWTAuthentication
-from django.contrib.auth import authenticate
-from django.contrib.auth import authenticate, get_user_model
+from django.contrib.auth import get_user_model
 from rest_framework import generics, status
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework_simplejwt.exceptions import AuthenticationFailed
@@ -20,6 +19,7 @@ from .models import OrganizationLunchWallet
 
 from .tokens import create_jwt_pair_for_user
 from .utils import EmailManager, generate_token, BaseResponse
+from .backends import CustomUserBackend
 
 from django.core.mail import send_mail
 
@@ -48,6 +48,10 @@ class AddBankAccountView(APIView):
 
 User = get_user_model()
 
+# Do not use `User` from `get_user_model()` above with `authenticate` below
+# Where User or Oganization model is needed for authetication, import directly form `users.models`
+authenticate = CustomUserBackend.authenticate
+
 
 class OrganizationCreateAPIView(generics.CreateAPIView):
     serializer_class = GetOrganizationSerializer
@@ -64,7 +68,7 @@ class OrganizationCreateAPIView(generics.CreateAPIView):
             'lunch_price':org.lunch_price,
             'currency':org.currency,
             'created_at':org.created_at,
-            # 'password':org.password
+            'password':org.password
         }
         res = {
             "message": "Organization created successfully!",
@@ -179,20 +183,22 @@ class LogoutView(APIView):
     """
     View to logout a user
     """
-    permission_classes = (IsAuthenticated,)
+    permission_classes = [IsAuthenticated]
 
     def post(self, request):
+    
         try:
-            refresh_token = request.data.get("refresh_token")
-           
-            token = RefreshToken(refresh_token)
-            token.blacklist()
-            base_response = BaseResponse(None, None, 'Successfully logged out.')
-            return Response(base_response.to_dict(), status=status.HTTP_200_OK)
-        except Exception as e:
-            print(type(str(e)))
-            return abort(400, str(e))
-
+             refresh_token = request.data["refresh_token"]
+        except:
+            return Response({"message":"refresh token needed"})
+        try:
+           token = RefreshToken(refresh_token)
+           token.blacklist()
+           base_response = BaseResponse(None, None, 'Successfully logged out.')
+           return Response(base_response.to_dict(), status=status.HTTP_200_OK)
+        except:
+            return Response({"message": "Token was blacklisted"})
+      
 
 
 class UpdateOrganizationLunchWallet(APIView):
@@ -222,7 +228,7 @@ class ListUsersView(generics.ListAPIView):
 
     queryset = Users.objects.all()
     serializer_class = AllUserSerializer
-    # authentication_classes = [JWTAuthentication]
+    # authentication_classes = [JWTAuthentication,]
     permission_classes = [IsAuthenticated]
 
 
