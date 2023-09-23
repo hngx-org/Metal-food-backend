@@ -127,6 +127,10 @@ class WithdrawalRequestCreateView(generics.CreateAPIView):
             withdrawal_request = Withdrawals.objects.create(
                 amount=serializer.validated_data["amount"], user_id=request.user
             )
+            #subtract amount withdrwan from user lunch balance
+            user = Users.object.get(id = request.user.id)
+            user.lunch_credit_balance -= serializer.validated_data["amount"]
+            user.save()
 
             withdrawal_request.status = "success"
             withdrawal_request.save()
