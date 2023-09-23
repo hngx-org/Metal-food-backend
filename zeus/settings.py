@@ -31,7 +31,7 @@ SECRET_KEY = 'django-insecure-y&g6_ol+(_lc=(mi=)k&pz2!l@$cglm3_d(k$t30q)sin((&gi
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["137.184.38.188", "*"]
+ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -96,29 +96,6 @@ DATABASES = {
     }
 }
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.mysql',
-#         'NAME': 'free_lunch_test_db',
-#         'USER': 'metal',
-#         'PASSWORD': 'Metal100%',
-#         'HOST': '35.193.20.212',  # Or the hostname where your MySQL server is running
-#         'PORT': '3306',       # MySQL's default port is 3306
-#     }
-# }
-
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-#         'NAME': 'team_metal_db',
-#         'USER': 'team_metal_user',
-#         'PASSWORD': 'SYW9oco2st70Mn6RYcRdrthmt6B3QnLo',
-#         'HOST': 'dpg-ck6t8avsasqs73djrtp0-a.oregon-postgres.render.com',  # Set to the PostgreSQL server host
-#         'PORT': '5432',       # Set to the PostgreSQL server port
-#     }
-# }
-
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -156,10 +133,6 @@ USE_TZ = True
 
 AUTH_USER_MODEL = 'users.Users'
 
-AUTHENTICATION_BACKENDS = [
-    'users.backends.CustomUserBackend',
-]
-
 REST_FRAMEWORK = {
     # Use Django's standard `django.contrib.auth` permissions,
     # or allow read-only access for unauthenticated users.
@@ -171,8 +144,9 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         
         'rest_framework_simplejwt.authentication.JWTAuthentication',
+        
         # Other authentication classes, if any
-    ),
+    ), 
 
 
     #  'DEFAULT_AUTHENTICATION_CLASSES': (
@@ -181,7 +155,7 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=10),
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
     'ROTATE_REFRESH_TOKENS': True,
     'BLACKLIST_AFTER_ROTATION': True,
@@ -197,18 +171,11 @@ SIMPLE_JWT = {
 }
 
 
-REST_FRAMEWORK = {
-    # Use Django's standard `django.contrib.auth` permissions,
-    # or allow read-only access for unauthenticated users.
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
-    ], 
-    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
-    
-    #  'DEFAULT_AUTHENTICATION_CLASSES': (
-    #      'rest_framework_simplejwt.authentication.JWTAuthentication',
-    #  )
-}
+PASSWORD_HASHERS = [
+    'django.contrib.auth.hashers.BCryptSHA256PasswordHasher',
+]
+
+
     
 
 
@@ -222,19 +189,18 @@ SPECTACULAR_SETTINGS = {
 
 # EMAIL SETTINGS
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_PORT = 587
 EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 465
-EMAIL_HOST_USER = 'ddummydum11@gmail.com'
-EMAIL_HOST_PASSWORD = 'uyxgapjpcefhpvmz'
-EMAIL_USE_TLS = False
-EMAIL_USE_SSL = True
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
+EMAIL_USE_TLS = True
+EMAIL_USE_SSL = False
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = 'static/'
-STATIC_ROOT = BASE_DIR / 'static/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
