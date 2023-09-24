@@ -34,3 +34,4 @@ typing_extensions==4.8.0
 tzdata==2023.3
 uritemplate==4.1.1
 urllib3==1.26.16
+whitenoise==6.5.0

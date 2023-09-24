@@ -59,6 +59,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -99,30 +100,30 @@ WSGI_APPLICATION = 'zeus.wsgi.application'
 #     }
 # }
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'metal',
-        'USER': 'root',
-        'PASSWORD': "Oludare2001",
-        'HOST':'localhost',
-        'PORT':'3306',
-        'OPTIONS':{
-            'autocommit':True
-        }
-    }
-}
-
 # DATABASES = {
 #     'default': {
-#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-#         'NAME': 'railway',
-#         'USER': 'postgres',
-#         'PASSWORD': 'NzFgveN56GmNmF0RKbWL',
-#         'HOST': 'containers-us-west-102.railway.app',  # Set to the PostgreSQL server host
-#         'PORT': 6002,       # Set to the PostgreSQL server port
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': 'metal',
+#         'USER': 'root',
+#         'PASSWORD': "Oludare2001",
+#         'HOST':'localhost',
+#         'PORT':'3306',
+#         'OPTIONS':{
+#             'autocommit':True
+#         }
 #     }
 # }
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'railway',
+        'USER': 'postgres',
+        'PASSWORD': 'wyFd3elqVAOyFd0WNFNZ',
+        'HOST': 'containers-us-west-144.railway.app',  # Set to the PostgreSQL server host
+        'PORT': 5560,       # Set to the PostgreSQL server port
+    }
+}
 
 
 
@@ -248,7 +249,8 @@ EMAIL_USE_SSL = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = 'static/'
-STATIC_ROOT = BASE_DIR / 'static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles/'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
