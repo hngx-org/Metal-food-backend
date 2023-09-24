@@ -100,6 +100,53 @@ class RegisterSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("This username is already in use.")
         return value
 
+# class LoginSerializer(TokenObtainPairSerializer):
+#     email = serializers.EmailField(required=True)
+#     password = serializers.CharField(required=True)
+#     default_error_messages = {
+#         'no_active_account': 'Your account is not active.',
+#         'invalid_credentials':'Invalid email or password.',
+#     }
+
+
+
+class RegisterSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['first_name', 'first_name', 'email', 'password',]
+        extra_kwargs = {'password': {'write_only': True}}
+
+    def create(self, validated_data):
+        org = self.context.get('org')
+        user = User(
+            first_name=validated_data['first_name'],
+            last_name=validated_data['last_name'],
+            email=validated_data['email'],
+            org=org
+        )
+        user.set_password(validated_data['password'])
+        user.is_active = True
+        user.save()
+        return user
+
+class RegisterUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['first_name','last_name', 'email', 'password',]
+        extra_kwargs = {'password': {'write_only': True}}
+
+    def create(self, validated_data):
+        user = User(
+            first_name=validated_data['first_name'],
+            last_name=validated_data['last_name'],
+            email=validated_data['email'],
+        )
+        user.set_password(validated_data['password'])
+        user.is_active = True
+        user.save()
+        return user
+
+
 class LoginSerializer(TokenObtainPairSerializer):
     email = serializers.EmailField(required=True)
     password = serializers.CharField(required=True)
@@ -107,6 +154,7 @@ class LoginSerializer(TokenObtainPairSerializer):
         'no_active_account': 'Your account is not active.',
         'invalid_credentials':'Invalid email or password.',
     }
+
 
 class UsersSerializer(serializers.ModelSerializer):
     class Meta:
@@ -162,3 +210,12 @@ class AllUserSerializer(ModelSerializer):
     class Meta:
         model = Users
         fields = ('id', 'first_name', 'last_name', 'email', 'profile_picture', 'lunch_credit_balance')
+
+class OTPRequestSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+
+
+class OTPVerificationSerializer(serializers.Serializer):
+    otp = serializers.IntegerField()
+    new_password = serializers.CharField(write_only=True)
+    email = serializers.EmailField()

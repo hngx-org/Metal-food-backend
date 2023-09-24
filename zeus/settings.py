@@ -59,6 +59,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -102,11 +103,14 @@ WSGI_APPLICATION = 'zeus.wsgi.application'
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'django.db.backends.mysql',
-#         'NAME': 'free_lunch_test_db',
-#         'USER': 'metal',
-#         'PASSWORD': 'Metal100%',
-#         'HOST': '35.193.20.212',  # Or the hostname where your MySQL server is running
-#         'PORT': '3306',       # MySQL's default port is 3306
+#         'NAME': 'metal',
+#         'USER': 'root',
+#         'PASSWORD': "Oludare2001",
+#         'HOST':'localhost',
+#         'PORT':'3306',
+#         'OPTIONS':{
+#             'autocommit':True
+#         }
 #     }
 # }
 
@@ -115,9 +119,9 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'railway',
         'USER': 'postgres',
-        'PASSWORD': 'NzFgveN56GmNmF0RKbWL',
-        'HOST': 'containers-us-west-102.railway.app',  # Set to the PostgreSQL server host
-        'PORT': 6002,       # Set to the PostgreSQL server port
+        'PASSWORD': 'wyFd3elqVAOyFd0WNFNZ',
+        'HOST': 'containers-us-west-144.railway.app',  # Set to the PostgreSQL server host
+        'PORT': 5560,       # Set to the PostgreSQL server port
     }
 }
 
@@ -158,6 +162,14 @@ USE_I18N = True
 USE_TZ = True
 
 AUTH_USER_MODEL = 'users.Users'
+
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'hngx16720@gmail.com'
+EMAIL_HOST_PASSWORD = 'qbnjqgvfagbnkqpw'
+EMAIL_USE_TLS = True
 
 REST_FRAMEWORK = {
     # Use Django's standard `django.contrib.auth` permissions,
@@ -237,7 +249,8 @@ EMAIL_USE_SSL = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = 'static/'
-STATIC_ROOT = BASE_DIR / 'static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles/'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
